@@ -3,6 +3,7 @@
 import { validatePack, type BrightStepsPack } from "@brightsteps/content-schema";
 import { db, saveCustomPack } from "@/db/client-db";
 import { fetchPack } from "@/lib/api";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -815,11 +816,17 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                       {item.imageDataUrl || item.imageLink.trim() ? (
                         <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2">
                           <p className="text-xs font-semibold text-slate-700">Image preview</p>
-                          <img
-                            alt={`Preview for card ${index + 1}`}
-                            className="mt-2 h-28 w-full rounded-md border border-slate-200 object-cover"
-                            src={item.imageDataUrl || item.imageLink.trim()}
-                          />
+                          <div className="relative mt-2 h-28 w-full overflow-hidden rounded-md border border-slate-200">
+                            <Image
+                              alt={`Preview for card ${index + 1}`}
+                              className="object-cover"
+                              fill
+                              loader={({ src }) => src}
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              src={item.imageDataUrl || item.imageLink.trim()}
+                              unoptimized
+                            />
+                          </div>
                         </div>
                       ) : null}
 
