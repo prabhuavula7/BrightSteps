@@ -2,6 +2,7 @@
   "name": "@brightsteps/content-schema",
   "version": "0.1.0",
   "private": true,
+  "author": "Prabhu Kiran Avula",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",

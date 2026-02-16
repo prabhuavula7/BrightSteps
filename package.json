@@ -2,6 +2,7 @@
   "name": "brightsteps",
   "private": true,
   "version": "0.1.0",
+  "author": "Prabhu Kiran Avula",
   "packageManager": "pnpm@10.29.3",
   "scripts": {
     "dev": "pnpm --filter @brightsteps/web dev",
