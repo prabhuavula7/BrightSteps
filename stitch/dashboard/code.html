@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BrightSteps - Learning Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-12 py-4">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-2xl">rocket_launch</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">BrightSteps</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-px bg-slate-200 dark:bg-slate-800 mx-1"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold leading-none">Alex Johnson</p>
+<p class="text-xs text-slate-500 mt-1">Student Learner</p>
+</div>
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-primary/20 bg-cover bg-center" data-alt="User profile avatar icon showing a friendly character" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgS5HfYFfXeY1d6yIsJILnz0zkHcrWBjVUDq1H7r3JVopNihQ6ZzrgMZhl2wocC7N5qjsI7rfVvw31bW2F-a8o2ogRbJohmrc9Rxsb1DsP3HA8jsNA8gPjXPdBE_lWiKpf0iANoEbxgJVR-vF6lGKyhpVc5jRoBaDZqSnQ9kXI5tug-TuIimbAW07DaM1itZyffAW59PwI4x3aHQraCKQ3B8pBr6etvFklI7UgfUXX2ZzM-8TVYGHZgDB4wfEGF76HOQ631Da27Yu9')">
+</div>
+</div>
+</div>
+</header>
+<main class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 p-6 md:p-12">
+<!-- Welcome Message -->
+<div class="flex flex-col gap-2">
+<h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Hello, Alex. Ready to learn?
+                </h1>
+<p class="text-lg text-slate-500 dark:text-slate-400">
+                    Your learning space is calm and ready for you today.
+                </p>
+</div>
+<!-- Quick Start Hero Section -->
+<section class="@container">
+<div class="flex flex-col overflow-hidden rounded-xl border border-primary/20 bg-white dark:bg-slate-900 shadow-sm @xl:flex-row">
+<div class="w-full bg-primary/5 @xl:w-1/3 flex items-center justify-center p-8">
+<div class="relative">
+<div class="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
+<span class="material-symbols-outlined text-primary text-[80px] relative">play_circle</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col justify-center gap-4 p-8 md:p-10">
+<div class="flex flex-col gap-2">
+<h3 class="text-2xl font-bold text-slate-900 dark:text-white">Quick Start</h3>
+<p class="text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed">
+                                Pick up exactly where you left off or begin a recommended session based on your interests.
+                            </p>
+</div>
+<div class="flex flex-wrap gap-4 mt-2">
+<button class="flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3 text-base font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
+<span class="material-symbols-outlined">bolt</span>
+                                Start New Session
+                            </button>
+<button class="flex items-center justify-center gap-2 rounded-lg bg-primary/10 px-8 py-3 text-base font-bold text-primary hover:bg-primary/20 transition-all">
+                                Resume Previous
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity and Progress Section -->
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+<!-- Recent Progress -->
+<div class="flex flex-col gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+<h4 class="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                            Recent Progress
+                        </h4>
+<span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Today</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2">
+<div class="flex flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 p-4 text-center">
+<p class="text-3xl font-black text-primary">30</p>
+<p class="text-sm font-medium text-slate-500">Minutes Spent</p>
+</div>
+<div class="flex flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 p-4 text-center">
+<p class="text-3xl font-black text-primary">2</p>
+<p class="text-sm font-medium text-slate-500">Topics Practiced</p>
+</div>
+</div>
+<div class="mt-2 flex flex-col gap-3">
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600 dark:text-slate-400">Social Skills Pack</span>
+<span class="font-bold text-primary">Completed</span>
+</div>
+<div class="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+<div class="h-full w-full bg-primary/60 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Daily Goal -->
+<div class="flex flex-col gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+<h4 class="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">star</span>
+                            Daily Goal
+                        </h4>
+<span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Status</span>
+</div>
+<div class="flex flex-col gap-4 py-2">
+<div class="flex items-center justify-between">
+<p class="text-base font-medium text-slate-700 dark:text-slate-300">Activities Completed</p>
+<p class="text-xl font-bold text-primary">4 / 5</p>
+</div>
+<div class="relative h-4 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+<div class="h-full w-[80%] bg-primary rounded-full transition-all duration-500"></div>
+</div>
+<div class="flex items-center gap-3 rounded-lg bg-primary/5 p-4 mt-2">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                You're doing great! One more activity to reach your goal. No rush!
+                            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Grid -->
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+<!-- Pack Browser -->
+<button class="group flex flex-col items-start gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md text-left">
+<div class="rounded-lg bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">explore</span>
+</div>
+<div>
+<h5 class="text-lg font-bold text-slate-900 dark:text-white">Pack Browser</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400">Discover new topics to learn.</p>
+</div>
+</button>
+<!-- Learning Logs -->
+<button class="group flex flex-col items-start gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md text-left">
+<div class="rounded-lg bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div>
+<h5 class="text-lg font-bold text-slate-900 dark:text-white">Learning Logs</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400">See your history and achievements.</p>
+</div>
+</button>
+<!-- CalmControls -->
+<button class="group flex flex-col items-start gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md text-left">
+<div class="rounded-lg bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</div>
+<div>
+<h5 class="text-lg font-bold text-slate-900 dark:text-white">CalmControls</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400">Adjust your sensory experience.</p>
+</div>
+</button>
+<!-- Design System -->
+<button class="group flex flex-col items-start gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md text-left">
+<div class="rounded-lg bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">category</span>
+</div>
+<div>
+<h5 class="text-lg font-bold text-slate-900 dark:text-white">Design System</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400">Reference app components.</p>
+</div>
+</button>
+</div>
+</main>
+<!-- Footer / Utility -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-8 px-6 md:px-12 text-center sm:text-left">
+<div class="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="text-sm text-slate-500 dark:text-slate-400">© 2024 BrightSteps Learning Portal</p>
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#">Help Center</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#">Privacy Guide</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

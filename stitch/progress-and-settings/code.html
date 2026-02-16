@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BrightSteps - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-nav { background-color: #2badee20; color: #2badee; border-right: 3px solid #2badee; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-white uppercase">BrightSteps</h1>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="active-nav flex items-center gap-3 px-3 py-2.5 rounded transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium">Progress Pulse</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">tune</span>
+<span class="font-medium">CalmControls</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-medium">Learning Logs</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="size-10 rounded-full bg-slate-200" data-alt="User profile avatar circle" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDT3ce_UuCkEXFlECiUSlhFK93L7Sq5aHtQLS7029lkoW6Db9wh3PnuMZsmEe2kEFP1MvVFZsvfC2zeXlg6G5xWFoNmy6ktm5f8qqW1s-rqZrm3rAEpE-Of5xAUBZiemJ5_uBs8sHTt8ZnoebCArQMd1bROTsoxzdP_lMKoRBX8A-TBy0NllRvLeFRICNWVReX9ZvxEtBa58VsfLjc3LBm3zHMvlG44JRcjKj2PkOl_EG2QH1s8gLTLES8dRDKXw-9UEnQfuac-kpA6')"></div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Alex Morgan</p>
+<p class="text-xs text-slate-500 truncate">Free Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Top Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-semibold">Dashboard</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded font-medium text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                        New Study Session
+                    </button>
+</div>
+</header>
+<div class="p-8 max-w-6xl mx-auto w-full space-y-8">
+<!-- Progress Pulse Section -->
+<section>
+<div class="flex items-end justify-between mb-6">
+<div>
+<h3 class="text-2xl font-black tracking-tight text-slate-800 dark:text-white">Progress Pulse</h3>
+<p class="text-slate-500">Your learning trends and daily activity.</p>
+</div>
+<div class="flex gap-2 text-sm text-slate-500">
+<button class="px-3 py-1 rounded bg-slate-200 dark:bg-slate-800 font-medium">Daily</button>
+<button class="px-3 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Weekly</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Stat Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 text-sm font-medium">Topics Practiced</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="text-4xl font-black text-slate-900 dark:text-white">12</span>
+<span class="text-green-500 text-sm font-bold pb-1 flex items-center">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                    +15%
+                                </span>
+</div>
+<div class="mt-4 h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%] rounded-full"></div>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 text-sm font-medium">Items Due</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="text-4xl font-black text-slate-900 dark:text-white">5</span>
+<span class="text-slate-400 text-sm font-bold pb-1">On Track</span>
+</div>
+<div class="mt-4 flex gap-1.5">
+<span class="size-1.5 rounded-full bg-primary"></span>
+<span class="size-1.5 rounded-full bg-primary"></span>
+<span class="size-1.5 rounded-full bg-primary"></span>
+<span class="size-1.5 rounded-full bg-primary"></span>
+<span class="size-1.5 rounded-full bg-primary"></span>
+<span class="size-1.5 rounded-full bg-slate-200 dark:bg-slate-800"></span>
+<span class="size-1.5 rounded-full bg-slate-200 dark:bg-slate-800"></span>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 text-sm font-medium">Focus Streak</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="text-4xl font-black text-slate-900 dark:text-white">8</span>
+<span class="text-primary text-sm font-bold pb-1 uppercase tracking-wider">Days</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+<p class="text-xs text-slate-500">Personal best is 14 days</p>
+</div>
+</div>
+</div>
+<div class="mt-6 bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h4 class="font-bold text-lg">Practice Activity</h4>
+<p class="text-sm text-slate-500">Hours spent learning over the last 7 days.</p>
+</div>
+<div class="text-right">
+<p class="text-2xl font-black text-primary">24h 12m</p>
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Time</p>
+</div>
+</div>
+<div class="h-48 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#2badee" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#2badee" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,150 Q150,50 300,100 T600,60 T900,120 L1000,100 L1000,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path d="M0,150 Q150,50 300,100 T600,60 T900,120 L1000,100" fill="none" stroke="#2badee" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="300" cy="100" fill="white" r="4" stroke="#2badee" stroke-width="2"></circle>
+<circle cx="600" cy="60" fill="white" r="4" stroke="#2badee" stroke-width="2"></circle>
+<circle cx="900" cy="120" fill="white" r="4" stroke="#2badee" stroke-width="2"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-4 px-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</section>
+<hr class="border-slate-200 dark:border-slate-800"/>
+<!-- CalmControls Section -->
+<section>
+<div class="mb-6">
+<h3 class="text-2xl font-black tracking-tight text-slate-800 dark:text-white">CalmControls</h3>
+<p class="text-slate-500">Customize your interface for a comfortable learning experience.</p>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Toggle: Reduced Motion -->
+<div class="p-6 flex items-center justify-between">
+<div class="flex gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">animation</span>
+</div>
+<div>
+<p class="font-bold">Reduced Motion</p>
+<p class="text-sm text-slate-500">Minimize animations and transitions.</p>
+</div>
+</div>
+<button class="w-12 h-6 rounded-full bg-primary relative transition-colors">
+<span class="absolute right-1 top-1 size-4 bg-white rounded-full"></span>
+</button>
+</div>
+<!-- Toggle: Audio -->
+<div class="p-6 flex items-center justify-between">
+<div class="flex gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">volume_off</span>
+</div>
+<div>
+<p class="font-bold">Audio Feedback</p>
+<p class="text-sm text-slate-500">Mute sounds for correct/incorrect answers.</p>
+</div>
+</div>
+<button class="w-12 h-6 rounded-full bg-slate-300 dark:bg-slate-700 relative transition-colors">
+<span class="absolute left-1 top-1 size-4 bg-white rounded-full"></span>
+</button>
+</div>
+<!-- Toggle: High Contrast -->
+<div class="p-6 flex items-center justify-between">
+<div class="flex gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">contrast</span>
+</div>
+<div>
+<p class="font-bold">High Contrast</p>
+<p class="text-sm text-slate-500">Increases visibility of text and icons.</p>
+</div>
+</div>
+<button class="w-12 h-6 rounded-full bg-slate-300 dark:bg-slate-700 relative transition-colors">
+<span class="absolute left-1 top-1 size-4 bg-white rounded-full"></span>
+</button>
+</div>
+<!-- Segmented Picker: Text Size -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">format_size</span>
+</div>
+<div>
+<p class="font-bold">Text Size</p>
+<p class="text-sm text-slate-500">Adjust the interface typography scaling.</p>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex max-w-xs">
+<button class="flex-1 px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">S</button>
+<button class="flex-1 px-4 py-2 text-sm font-bold bg-white dark:bg-slate-700 shadow-sm rounded-md text-primary">M</button>
+<button class="flex-1 px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">L</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<footer class="mt-auto p-8 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-slate-400 text-sm font-medium">
+<p>© 2024 BrightSteps. Minimalist Learning Platform.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Privacy</a>
+<a class="hover:text-primary" href="#">Terms</a>
+<a class="hover:text-primary" href="#">Help Center</a>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

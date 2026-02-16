@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300" viewBox="0 0 500 300" role="img" aria-label="Cat on mat illustration">
+  <rect width="500" height="300" rx="24" fill="#eef8ff"/>
+  <rect x="120" y="210" width="260" height="42" rx="12" fill="#5aa9e6"/>
+  <circle cx="250" cy="165" r="50" fill="#f2a65a"/>
+  <circle cx="220" cy="120" r="24" fill="#f2a65a"/>
+  <circle cx="280" cy="120" r="24" fill="#f2a65a"/>
+</svg>

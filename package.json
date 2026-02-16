@@ -1,0 +1,20 @@
+{
+  "name": "brightsteps",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "dev": "pnpm --filter @brightsteps/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @brightsteps/web test:e2e",
+    "format": "pnpm -r format"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

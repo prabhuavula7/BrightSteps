@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BrightSteps - Session Player: PicturePhrases</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .word-tile-shadow {
+            box-shadow: 0 4px 6px -1px rgba(43, 173, 238, 0.1), 0 2px 4px -1px rgba(43, 173, 238, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 flex flex-col">
+<!-- Header Navigation -->
+<header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">auto_stories</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-800">BrightSteps</h2>
+</div>
+<div class="flex-1 max-w-xl px-12">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Session: PicturePhrases</span>
+<span class="text-xs font-bold text-primary">6 / 10 Completed</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 60%;"></div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+<span class="text-sm font-medium">Alex M.</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Exit Session">
+<span class="material-symbols-outlined">logout</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 container mx-auto max-w-5xl px-6 py-8 flex flex-col gap-8">
+<!-- Instruction -->
+<div class="text-center">
+<h1 class="text-2xl font-bold text-slate-800 mb-2">Build the sentence that describes the picture</h1>
+<p class="text-slate-500 font-medium italic">"Drag and drop the words into the correct order below."</p>
+</div>
+<!-- Central Visual Container -->
+<div class="w-full bg-white border-2 border-slate-100 rounded-xl p-4 shadow-sm">
+<div class="aspect-video w-full max-h-[400px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
+<img class="w-full h-full object-cover" data-alt="Illustration of a fluffy ginger cat sitting on a blue mat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChu_cCI-6rqLAPVADUeWoLbp3LaQt742AwaZA-7KRtlfxD7es7SA7fqJWqPOBjXWQM3xuNgBReHHvFP7mxmkoILeFxJ-T8_w1GZPArOHRkM5a4FBlKEBdwicg27d1TMSUkW2BlmlR8fuoZDbyN3X2MaqbvVPepMoMyZapamHn7mgt8JM7fkhyJPfL9EO4YTurSN0TRJpsJicZIY2Xl5UjWqbEawY4Hi-eLg03Bz9Y6gUjXXzrPK3tljx_rRa5p6hR7eakwOMntLEvb"/>
+</div>
+</div>
+<!-- Sentence Construction Area -->
+<div class="flex flex-wrap justify-center gap-3 py-6 min-h-[80px]">
+<!-- Filled Slots -->
+<div class="h-14 min-w-[100px] px-6 bg-primary/10 border-2 border-primary rounded-lg flex items-center justify-center text-primary font-bold text-lg word-tile-shadow">
+                The
+            </div>
+<div class="h-14 min-w-[100px] px-6 bg-primary/10 border-2 border-primary rounded-lg flex items-center justify-center text-primary font-bold text-lg word-tile-shadow">
+                cat
+            </div>
+<!-- Empty Slots -->
+<div class="h-14 min-w-[100px] border-2 border-dashed border-slate-300 rounded-lg bg-slate-50/50"></div>
+<div class="h-14 min-w-[100px] border-2 border-dashed border-slate-300 rounded-lg bg-slate-50/50"></div>
+<div class="h-14 min-w-[100px] border-2 border-dashed border-slate-300 rounded-lg bg-slate-50/50"></div>
+<div class="h-14 min-w-[100px] border-2 border-dashed border-slate-300 rounded-lg bg-slate-50/50"></div>
+</div>
+<!-- Word Bank (Horizontal Tray) -->
+<div class="bg-slate-100/50 border border-slate-200 rounded-xl p-8">
+<div class="flex flex-wrap justify-center gap-4">
+<button class="h-14 min-w-[110px] bg-white border border-slate-200 rounded-lg flex items-center justify-center font-semibold text-slate-700 hover:border-primary hover:text-primary transition-all cursor-grab active:cursor-grabbing shadow-sm">
+                    on
+                </button>
+<button class="h-14 min-w-[110px] bg-white border border-slate-200 rounded-lg flex items-center justify-center font-semibold text-slate-700 hover:border-primary hover:text-primary transition-all cursor-grab active:cursor-grabbing shadow-sm">
+                    mat
+                </button>
+<button class="h-14 min-w-[110px] bg-white border border-slate-200 rounded-lg flex items-center justify-center font-semibold text-slate-700 hover:border-primary hover:text-primary transition-all cursor-grab active:cursor-grabbing shadow-sm">
+                    the
+                </button>
+<button class="h-14 min-w-[110px] bg-white border border-slate-200 rounded-lg flex items-center justify-center font-semibold text-slate-700 hover:border-primary hover:text-primary transition-all cursor-grab active:cursor-grabbing shadow-sm">
+                    is
+                </button>
+</div>
+</div>
+</main>
+<!-- Control Bar (Sticky Bottom) -->
+<footer class="bg-white border-t border-slate-200 py-6 px-12 mt-auto">
+<div class="container mx-auto max-w-5xl flex items-center justify-between">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-6 py-3 border border-slate-300 text-slate-600 font-bold rounded-lg hover:bg-slate-50 transition-colors uppercase text-sm tracking-wide">
+<span class="material-symbols-outlined text-xl">refresh</span>
+                    Reset
+                </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-primary/20 text-primary font-bold rounded-lg hover:bg-primary/30 transition-colors uppercase text-sm tracking-wide">
+<span class="material-symbols-outlined text-xl">lightbulb</span>
+                    Hint
+                </button>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-10 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg uppercase text-sm tracking-widest">
+<span class="material-symbols-outlined text-xl">task_alt</span>
+                    Check
+                </button>
+<!-- Disabled/Next state placeholder -->
+<button class="flex items-center gap-2 px-10 py-3 bg-slate-200 text-slate-400 font-bold rounded-lg cursor-not-allowed uppercase text-sm tracking-widest">
+                    Next
+                    <span class="material-symbols-outlined text-xl text-slate-400">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Feedback Notification (Hidden by default, shown conceptually) -->
+<!-- 
+    <div class="fixed bottom-28 left-1/2 -translate-x-1/2 bg-green-50 border border-green-200 text-green-700 px-8 py-3 rounded-full flex items-center gap-3 shadow-xl">
+        <span class="material-symbols-outlined text-green-500">check_circle</span>
+        <span class="font-bold">Excellent! "The cat is on the mat."</span>
+    </div> 
+    -->
+</body></html>

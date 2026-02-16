@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "2.0.0",
+  "packId": "picturephrases-animals-001",
+  "moduleType": "picturephrases",
+  "title": "Animal Sentences",
+  "description": "Build simple descriptive sentences from pictures.",
+  "version": "1.0.0",
+  "language": "en",
+  "ageBand": "6-10",
+  "topics": ["language", "animals"],
+  "settings": {
+    "defaultSupportLevel": 2,
+    "audioEnabledByDefault": false
+  },
+  "assets": [
+    {
+      "id": "img_cat_mat",
+      "kind": "image",
+      "path": "assets/images/cat-mat.svg",
+      "alt": "A cat sitting on a mat"
+    },
+    {
+      "id": "img_dog_park",
+      "kind": "image",
+      "path": "assets/images/dog-park.svg",
+      "alt": "A dog running in a park"
+    }
+  ],
+  "items": [
+    {
+      "id": "pp_animals_001",
+      "type": "picturephrase",
+      "topic": "animals",
+      "media": {
+        "imageRef": "img_cat_mat"
+      },
+      "wordBank": [
+        { "id": "w1", "text": "the" },
+        { "id": "w2", "text": "cat" },
+        { "id": "w3", "text": "is" },
+        { "id": "w4", "text": "on" },
+        { "id": "w5", "text": "mat" }
+      ],
+      "sentenceGroups": [
+        {
+          "intent": "location_statement",
+          "canonical": "The cat is on the mat.",
+          "acceptable": [
+            "The cat is on the mat.",
+            "The cat is on mat"
+          ],
+          "requiredWordIds": ["w2", "w3", "w4"],
+          "minWords": 4,
+          "maxWords": 8
+        }
+      ],
+      "hintLevels": {
+        "level3": "Start with: The cat",
+        "level2": "Remember to include where the cat is.",
+        "level1": "Use the verb is"
+      }
+    },
+    {
+      "id": "pp_animals_002",
+      "type": "picturephrase",
+      "topic": "animals",
+      "media": {
+        "imageRef": "img_dog_park"
+      },
+      "wordBank": [
+        { "id": "w1", "text": "the" },
+        { "id": "w2", "text": "dog" },
+        { "id": "w3", "text": "runs" },
+        { "id": "w4", "text": "in" },
+        { "id": "w5", "text": "park" }
+      ],
+      "sentenceGroups": [
+        {
+          "intent": "action_statement",
+          "canonical": "The dog runs in the park.",
+          "acceptable": [
+            "The dog runs in the park.",
+            "The dog runs in park"
+          ],
+          "requiredWordIds": ["w2", "w3", "w4"],
+          "minWords": 4,
+          "maxWords": 8
+        }
+      ],
+      "hintLevels": {
+        "level3": "Start with: The dog",
+        "level2": "Think about where the dog runs.",
+        "level1": "Use the action word runs"
+      }
+    }
+  ]
+}

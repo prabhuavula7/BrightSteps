@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240" role="img" aria-label="Japan map icon">
+  <rect width="400" height="240" rx="24" fill="#f4f6f8"/>
+  <circle cx="200" cy="120" r="52" fill="#ff5a5a"/>
+  <text x="200" y="127" text-anchor="middle" font-size="24" fill="#ffffff" font-family="Arial, sans-serif">JP</text>
+</svg>

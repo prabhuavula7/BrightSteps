@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "2.0.0",
+  "packId": "factcards-geography-001",
+  "moduleType": "factcards",
+  "title": "Geography Basics",
+  "description": "Foundational geography facts for calm review.",
+  "version": "1.0.0",
+  "language": "en",
+  "ageBand": "6-10",
+  "topics": ["geography"],
+  "settings": {
+    "defaultSupportLevel": 2,
+    "audioEnabledByDefault": false
+  },
+  "assets": [
+    {
+      "id": "img_france",
+      "kind": "image",
+      "path": "assets/images/france.svg",
+      "alt": "Simple map icon for France"
+    },
+    {
+      "id": "img_japan",
+      "kind": "image",
+      "path": "assets/images/japan.svg",
+      "alt": "Simple map icon for Japan"
+    }
+  ],
+  "items": [
+    {
+      "id": "fc_geo_001",
+      "type": "factcard",
+      "topic": "geography",
+      "prompt": "What is the capital of France?",
+      "answer": "Paris",
+      "distractors": ["Berlin", "Madrid", "Rome"],
+      "hints": ["It is known as the City of Light."],
+      "media": {
+        "imageRef": "img_france"
+      }
+    },
+    {
+      "id": "fc_geo_002",
+      "type": "factcard",
+      "topic": "geography",
+      "prompt": "What is the capital of Japan?",
+      "answer": "Tokyo",
+      "distractors": ["Kyoto", "Osaka", "Seoul"],
+      "hints": ["It begins with the letter T."],
+      "media": {
+        "imageRef": "img_japan"
+      }
+    }
+  ]
+}
