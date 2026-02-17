@@ -9,11 +9,12 @@ export default async function SummaryPage({
     total?: string;
     correct?: string;
     hints?: string;
-    moduleType?: string;
-    endedBy?: "completed" | "timer" | "manual";
-  }>;
+      moduleType?: string;
+      endedBy?: "completed" | "timer" | "manual";
+      mode?: "learn" | "review";
+    }>;
 }) {
-  const { packId, total, correct, hints, moduleType, endedBy } = await searchParams;
+  const { packId, total, correct, hints, moduleType, endedBy, mode } = await searchParams;
   const endingNote =
     endedBy === "timer"
       ? "Session ended when the timer reached 00:00."
@@ -45,12 +46,12 @@ export default async function SummaryPage({
           </div>
 
           <p className="mt-4 text-sm text-slate-500">
-            Module: {moduleType ?? "unknown"} | Pack: {packId ?? "unknown"}
+            Module: {moduleType ?? "unknown"} | Pack: {packId ?? "unknown"} | Mode: {mode ?? "unknown"}
           </p>
           <p className="mt-1 text-sm text-slate-500">{endingNote}</p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link className="rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white" href="/">
+            <Link className="rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white" href="/">
               Back to Packs
             </Link>
             <Link

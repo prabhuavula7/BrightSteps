@@ -1,23 +1,33 @@
 "use client";
 
 import type { ModuleType } from "@brightsteps/content-schema";
+import { useSettings } from "@/components/settings-provider";
+import { getDefaultReviewDuration, getReviewDurationOptions } from "@/lib/session";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Props = {
   packId: string;
+  itemCount: number;
   moduleType: ModuleType;
-  source: "builtin" | "custom";
+  source: "builtin" | "custom" | "picturephrases";
 };
 
-export function SessionSetupForm({ packId, moduleType, source }: Props) {
+export function SessionSetupForm({ packId, itemCount, moduleType, source }: Props) {
   const router = useRouter();
-  const [durationMinutes, setDurationMinutes] = useState<5 | 10 | 15>(10);
+  const { settings } = useSettings();
   const [mode, setMode] = useState<"learn" | "review">("learn");
+  const reviewDurationOptions = useMemo(() => getReviewDurationOptions(itemCount), [itemCount]);
+  const [durationMinutes, setDurationMinutes] = useState<number>(() => getDefaultReviewDuration(itemCount));
   const [supportLevel, setSupportLevel] = useState<"auto" | 0 | 1 | 2 | 3>("auto");
-  const [inputType, setInputType] = useState<"tap" | "drag" | "type">(
-    moduleType === "picturephrases" ? "drag" : "tap",
-  );
+  const [inputTypeOverride, setInputTypeOverride] = useState<"tap" | "drag" | "type" | null>(null);
+
+  const safeDurationMinutes = reviewDurationOptions.includes(durationMinutes)
+    ? durationMinutes
+    : getDefaultReviewDuration(itemCount);
+  const inputType =
+    inputTypeOverride ??
+    (moduleType === "picturephrases" ? settings.inputPreference : "tap");
 
   return (
     <form
@@ -25,7 +35,7 @@ export function SessionSetupForm({ packId, moduleType, source }: Props) {
       onSubmit={(event) => {
         event.preventDefault();
         const params = new URLSearchParams({
-          duration: String(durationMinutes),
+          duration: String(mode === "review" ? safeDurationMinutes : 0),
           mode,
           support: String(supportLevel),
           input: inputType,
@@ -38,29 +48,44 @@ export function SessionSetupForm({ packId, moduleType, source }: Props) {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-slate-600">Duration</span>
-          <select
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2"
-            value={durationMinutes}
-            onChange={(event) => setDurationMinutes(Number(event.target.value) as 5 | 10 | 15)}
-          >
-            <option value={5}>5 minutes</option>
-            <option value={10}>10 minutes</option>
-            <option value={15}>15 minutes</option>
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-slate-600">Mode</span>
           <select
             className="rounded-lg border border-slate-300 bg-white px-3 py-2"
             value={mode}
-            onChange={(event) => setMode(event.target.value as "learn" | "review")}
+            onChange={(event) => {
+              const nextMode = event.target.value as "learn" | "review";
+              setMode(nextMode);
+              if (nextMode === "review" && !reviewDurationOptions.includes(safeDurationMinutes)) {
+                setDurationMinutes(getDefaultReviewDuration(itemCount));
+              }
+            }}
           >
             <option value="learn">Learn</option>
             <option value="review">Review</option>
           </select>
         </label>
+
+        {mode === "review" ? (
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-semibold text-slate-600">Review Time Limit</span>
+            <select
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2"
+              value={safeDurationMinutes}
+              onChange={(event) => setDurationMinutes(Number(event.target.value))}
+            >
+              {reviewDurationOptions.map((minutes) => (
+                <option key={minutes} value={minutes}>
+                  {minutes} minutes
+                </option>
+              ))}
+            </select>
+            <span className="text-xs text-slate-500">Deck size: {itemCount} cards</span>
+          </label>
+        ) : (
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+            Learn mode is untimed. The session moves at the child&apos;s pace.
+          </div>
+        )}
 
         <label className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-slate-600">Support Level</span>
@@ -85,17 +110,17 @@ export function SessionSetupForm({ packId, moduleType, source }: Props) {
           <select
             className="rounded-lg border border-slate-300 bg-white px-3 py-2"
             value={inputType}
-            onChange={(event) => setInputType(event.target.value as "tap" | "drag" | "type")}
+            onChange={(event) => setInputTypeOverride(event.target.value as "tap" | "drag" | "type")}
           >
             <option value="tap">Tap</option>
-            <option value="drag">Drag</option>
+            {moduleType === "picturephrases" ? <option value="drag">Drag</option> : null}
             <option value="type">Type</option>
           </select>
         </label>
       </div>
 
       <button
-        className="rounded-lg bg-[#2badee] px-4 py-3 text-sm font-bold text-white hover:bg-[#2094ce]"
+        className="rounded-lg bg-brand px-4 py-3 text-sm font-bold text-white hover:bg-brand-strong"
         type="submit"
       >
         Start Session

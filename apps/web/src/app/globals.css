@@ -3,11 +3,134 @@
 :root {
   --background: #f6f7f8;
   --foreground: #0f172a;
+  --muted-foreground: #475569;
+  --card-border: #e2e8f0;
+  --base-font-size: clamp(15px, 0.2vw + 14px, 18px);
+  --text-scale: 1;
   --primary: #2badee;
+  --primary-strong: #188fc9;
+  --primary-soft: #e3f4fc;
+  --primary-soft-strong: #cbeafa;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="blue"] {
+  --primary: #2badee;
+  --primary-strong: #188fc9;
+  --primary-soft: #e3f4fc;
+  --primary-soft-strong: #cbeafa;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="red"] {
+  --primary: #ef4444;
+  --primary-strong: #dc2626;
+  --primary-soft: #fee2e2;
+  --primary-soft-strong: #fecaca;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="green"] {
+  --primary: #10b981;
+  --primary-strong: #059669;
+  --primary-soft: #d1fae5;
+  --primary-soft-strong: #a7f3d0;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="maroon"] {
+  --primary: #7f1d1d;
+  --primary-strong: #6b1515;
+  --primary-soft: #fee2e2;
+  --primary-soft-strong: #fecaca;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="purple"] {
+  --primary: #7c3aed;
+  --primary-strong: #6d28d9;
+  --primary-soft: #ede9fe;
+  --primary-soft-strong: #ddd6fe;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="orange"] {
+  --primary: #f97316;
+  --primary-strong: #ea580c;
+  --primary-soft: #ffedd5;
+  --primary-soft-strong: #fed7aa;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="black"] {
+  --primary: #111827;
+  --primary-strong: #020617;
+  --primary-soft: #e5e7eb;
+  --primary-soft-strong: #d1d5db;
+  --on-primary: #ffffff;
+}
+
+html[data-theme-accent="gold"] {
+  --primary: #b7791f;
+  --primary-strong: #975a16;
+  --primary-soft: #fef3c7;
+  --primary-soft-strong: #fde68a;
+  --on-primary: #ffffff;
+}
+
+html[data-contrast="high"] {
+  --background: #f2f5f8;
+  --foreground: #020617;
+  --muted-foreground: #1e293b;
+  --card-border: #94a3b8;
+}
+
+html[data-contrast="high"] .text-slate-400 {
+  color: #334155;
+}
+
+html[data-contrast="high"] .text-slate-500 {
+  color: #1f2937;
+}
+
+html[data-contrast="high"] .text-slate-600 {
+  color: #0f172a;
+}
+
+html[data-contrast="high"] .text-slate-700 {
+  color: #020617;
+}
+
+html[data-contrast="high"] .border-slate-200 {
+  border-color: #94a3b8;
+}
+
+html[data-contrast="high"] .bg-slate-50 {
+  background-color: #f8fafc;
+}
+
+html[data-text-size="small"] {
+  --text-scale: 0.93;
+}
+
+html[data-text-size="medium"] {
+  --text-scale: 1;
+}
+
+html[data-text-size="large"] {
+  --text-scale: 1.1;
 }
 
 html {
-  font-size: clamp(15px, 0.2vw + 14px, 18px);
+  font-size: calc(var(--base-font-size) * var(--text-scale));
+}
+
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+  animation-duration: 0ms !important;
+  transition-duration: 0ms !important;
+  scroll-behavior: auto !important;
 }
 
 body {
@@ -21,13 +144,61 @@ body {
 button,
 input,
 select {
-  outline-color: var(--primary);
+  outline-color: var(--primary-strong);
 }
 
 .card {
-  @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  @apply rounded-xl bg-white shadow-sm;
+  border: 1px solid var(--card-border);
 }
 
 .container-page {
   @apply mx-auto w-full max-w-[1900px] px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 xl:px-8 2xl:px-10;
+}
+
+.bg-brand {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.bg-brand-strong {
+  background-color: var(--primary-strong);
+  color: var(--on-primary);
+}
+
+.bg-brand-soft {
+  background-color: var(--primary-soft);
+}
+
+.text-brand {
+  color: var(--primary);
+}
+
+.text-brand-strong {
+  color: var(--primary-strong);
+}
+
+.text-on-brand {
+  color: var(--on-primary);
+}
+
+.border-brand {
+  border-color: var(--primary);
+}
+
+.hover\:bg-brand-soft:hover {
+  background-color: var(--primary-soft);
+}
+
+.hover\:bg-brand-strong:hover {
+  background-color: var(--primary-strong);
+  color: var(--on-primary);
+}
+
+.hover\:text-brand:hover {
+  color: var(--primary);
+}
+
+.hover\:border-brand:hover {
+  border-color: var(--primary);
 }

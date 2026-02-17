@@ -4,23 +4,28 @@ import type { BrightStepsPack } from "@brightsteps/content-schema";
 import { SessionPlayer } from "@/components/session-player";
 import { TopNav } from "@/components/top-nav";
 import { db } from "@/db/client-db";
-import { fetchPack, type PackPayload } from "@/lib/api";
+import { fetchPack, fetchPicturePhrasePack, type PackPayload } from "@/lib/api";
 import type { SessionConfig } from "@/types/session";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 function parseSessionConfig(searchParams: URLSearchParams): SessionConfig {
-  const duration = Number(searchParams.get("duration") ?? "10");
   const mode = searchParams.get("mode") === "review" ? "review" : "learn";
+  const durationRaw = Number.parseInt(searchParams.get("duration") ?? "0", 10);
+  const duration = Number.isFinite(durationRaw) && durationRaw > 0 ? durationRaw : 10;
   const supportRaw = searchParams.get("support");
-  const supportLevel = supportRaw === "auto" || supportRaw === null
-    ? "auto"
-    : (Number(supportRaw) as 0 | 1 | 2 | 3);
+  const supportParsed = Number.parseInt(supportRaw ?? "", 10);
+  const supportLevel =
+    supportRaw === "auto" || supportRaw === null
+      ? "auto"
+      : supportParsed === 0 || supportParsed === 1 || supportParsed === 2 || supportParsed === 3
+        ? supportParsed
+        : "auto";
   const inputRaw = searchParams.get("input");
   const inputType = inputRaw === "drag" || inputRaw === "type" ? inputRaw : "tap";
 
   return {
-    durationMinutes: duration === 5 || duration === 15 ? duration : 10,
+    durationMinutes: mode === "review" ? duration : 0,
     mode,
     supportLevel,
     inputType,
@@ -42,7 +47,8 @@ export default function SessionPage() {
     async function load() {
       setError("");
       setPack(null);
-      const source = searchParams.get("source") === "custom" ? "custom" : "builtin";
+      const sourceRaw = searchParams.get("source");
+      const source = sourceRaw === "custom" ? "custom" : sourceRaw === "picturephrases" ? "picturephrases" : "builtin";
 
       if (source === "custom") {
         const record = await db.customPacks.get(params.packId);
@@ -62,6 +68,26 @@ export default function SessionPage() {
 
         setPack(record.payload);
         setAssetUrlById(Object.fromEntries(record.payload.assets.map((asset) => [asset.id, asset.path])));
+        return;
+      }
+
+      if (source === "picturephrases") {
+        try {
+          const payload = await fetchPicturePhrasePack(params.packId);
+          if (payload.summary.valid !== true) {
+            setError("PicturePhrases pack is not ready. Finish generation or fix JSON first.");
+            return;
+          }
+
+          if (cancelled) {
+            return;
+          }
+
+          setPack(payload.pack as BrightStepsPack);
+          setAssetUrlById(payload.assetUrlById);
+        } catch {
+          setError("PicturePhrases pack could not be loaded.");
+        }
         return;
       }
 

@@ -5,6 +5,7 @@ test("FactCards session flow works", async ({ page }) => {
 
   await page.getByRole("link", { name: "Start Session" }).first().click();
   await expect(page.getByRole("heading", { name: "Session Setup" })).toBeVisible();
+  await page.getByLabel("Mode").selectOption("review");
 
   await page.getByRole("button", { name: "Start Session" }).click();
   await expect(page.getByText("Session Progress:")).toBeVisible();
@@ -23,16 +24,21 @@ test("PicturePhrases session flow works", async ({ page }) => {
 
   await page.getByRole("link", { name: "Start Session" }).first().click();
   await page.getByRole("button", { name: "Start Session" }).click();
+  await expect(page.getByText("Untimed Learn Mode")).toBeVisible();
 
-  for (const word of ["the", "cat", "is", "on", "mat"]) {
-    await page.getByRole("button", { name: word }).first().click();
-  }
-  await page.getByRole("button", { name: "Check & Next" }).click();
+  for (let index = 0; index < 8; index += 1) {
+    const finishButton = page.getByRole("button", { name: "Finish Session" });
+    if (await finishButton.isVisible()) {
+      await finishButton.click();
+      break;
+    }
 
-  for (const word of ["the", "dog", "runs", "in", "park"]) {
-    await page.getByRole("button", { name: word }).first().click();
+    const nextButton = page.getByRole("button", { name: "Next Card" });
+    if (await nextButton.isVisible()) {
+      await nextButton.click();
+      continue;
+    }
   }
-  await page.getByRole("button", { name: "Check & Next" }).click();
 
   await expect(page.getByRole("heading", { name: "Session Complete" })).toBeVisible();
 });

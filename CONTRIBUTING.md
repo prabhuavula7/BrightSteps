@@ -18,6 +18,12 @@ pnpm install
 pnpm dev
 ```
 
+- Create local env file before running AI-backed flows:
+
+```bash
+cp apps/web/.env.local.example apps/web/.env.local
+```
+
 ## Lint and Test
 
 Use the following commands (or the closest equivalents in this repo):

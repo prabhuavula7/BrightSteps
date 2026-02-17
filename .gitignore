@@ -33,6 +33,13 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 
+# Local data stores
+data/
+apps/web/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
 # OS and editor
 .DS_Store
 .vscode/

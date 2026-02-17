@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, BookText, House, Image as ImageIcon, Settings } from "lucide-react";
+import { AreaChart, BookOpen, BookText, House, Image as ImageIcon, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,6 +12,7 @@ type AppShellProps = {
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: House },
+  { href: "/insights", label: "Insights", icon: AreaChart },
   { href: "/factcards", label: "FactCards", icon: BookText },
   { href: "/picturephrases", label: "PicturePhrases", icon: ImageIcon },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -34,7 +35,7 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
         <aside className="sticky top-0 hidden h-dvh w-72 flex-col border-r border-slate-200 bg-white p-5 lg:flex 2xl:w-80 2xl:p-6">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-sm 2xl:h-14 2xl:w-14">
-              <BookOpen className="h-6 w-6 text-[#2badee] 2xl:h-7 2xl:w-7" strokeWidth={2.25} />
+              <BookOpen className="h-6 w-6 text-brand 2xl:h-7 2xl:w-7" strokeWidth={2.25} />
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-500 2xl:text-base">BrightSteps</p>
@@ -51,7 +52,7 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
                   key={item.href}
                   className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition 2xl:text-[15px] ${
                     active
-                      ? "bg-[#2badee]/10 text-[#2badee]"
+                      ? "bg-brand-soft text-brand"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                   href={item.href}
@@ -78,7 +79,7 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
                   key={item.href}
                   className={`inline-flex shrink-0 items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold ${
                     isNavActive(pathname, item.href)
-                      ? "bg-[#2badee]/10 text-[#2badee]"
+                      ? "bg-brand-soft text-brand"
                       : "bg-slate-100 text-slate-700"
                   }`}
                   href={item.href}

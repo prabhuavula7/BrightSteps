@@ -48,7 +48,7 @@ export function FactCardsPackManager() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl font-bold text-slate-900">Available FactCards Packs</h2>
         <Link
-          className="inline-flex items-center gap-1 rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white"
+          className="inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
           href="/settings/factcards/create"
         >
           <Plus className="h-4 w-4" />
@@ -87,7 +87,7 @@ export function FactCardsPackManager() {
                   Edit
                 </Link>
                 <Link
-                  className="inline-flex items-center gap-1 rounded-md bg-[#2badee] px-3 py-1 text-xs font-bold text-white"
+                  className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1 text-xs font-bold text-white"
                   href={`/session/setup?packId=${encodeURIComponent(pack.packId)}`}
                 >
                   <Play className="h-3.5 w-3.5" />
@@ -147,7 +147,7 @@ export function FactCardsPackManager() {
                       Delete
                     </button>
                     <Link
-                      className="inline-flex items-center gap-1 rounded-md bg-[#2badee] px-3 py-1 text-xs font-bold text-white"
+                      className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1 text-xs font-bold text-white"
                       href={`/session/setup?customPackId=${encodeURIComponent(pack.id)}`}
                     >
                       <Play className="h-3.5 w-3.5" />

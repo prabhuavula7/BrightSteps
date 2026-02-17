@@ -2,15 +2,16 @@
 
 import { SessionSetupForm } from "@/components/session-setup-form";
 import { db } from "@/db/client-db";
-import { fetchPack } from "@/lib/api";
+import { fetchPack, fetchPicturePhrasePack } from "@/lib/api";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type SetupState = {
   packId: string;
   title: string;
+  itemCount: number;
   moduleType: "factcards" | "picturephrases";
-  source: "builtin" | "custom";
+  source: "builtin" | "custom" | "picturephrases";
 };
 
 export function SessionSetupClient() {
@@ -25,8 +26,9 @@ export function SessionSetupClient() {
       setError("");
       const packId = searchParams.get("packId");
       const customPackId = searchParams.get("customPackId");
+      const ppPackId = searchParams.get("ppPackId");
 
-      if (!packId && !customPackId) {
+      if (!packId && !customPackId && !ppPackId) {
         setError("Choose a pack from FactCards or PicturePhrases first.");
         return;
       }
@@ -45,9 +47,30 @@ export function SessionSetupClient() {
         setState({
           packId: record.id,
           title: record.title,
+          itemCount: record.payload.items.length,
           moduleType: record.moduleType,
           source: "custom",
         });
+        return;
+      }
+
+      if (ppPackId) {
+        try {
+          const payload = await fetchPicturePhrasePack(ppPackId);
+          if (cancelled) {
+            return;
+          }
+
+          setState({
+            packId: ppPackId,
+            title: payload.summary.title,
+            itemCount: payload.summary.itemCount,
+            moduleType: "picturephrases",
+            source: "picturephrases",
+          });
+        } catch {
+          setError("PicturePhrases pack could not be loaded.");
+        }
         return;
       }
 
@@ -61,6 +84,7 @@ export function SessionSetupClient() {
           setState({
             packId,
             title: payload.pack.title,
+            itemCount: payload.pack.items.length,
             moduleType: payload.pack.moduleType,
             source: "builtin",
           });
@@ -89,7 +113,12 @@ export function SessionSetupClient() {
               Configure your {state.moduleType === "factcards" ? "FactCards" : "PicturePhrases"} session.
             </p>
           </div>
-          <SessionSetupForm moduleType={state.moduleType} packId={state.packId} source={state.source} />
+          <SessionSetupForm
+            itemCount={state.itemCount}
+            moduleType={state.moduleType}
+            packId={state.packId}
+            source={state.source}
+          />
         </>
       ) : (
         <div className="card p-4 text-sm text-slate-600">Loading setup...</div>

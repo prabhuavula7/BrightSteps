@@ -1,8 +1,21 @@
 "use client";
 
 import { db } from "@/db/client-db";
+import { useSettings } from "@/components/settings-provider";
 import { fetchPackSummaries } from "@/lib/api";
-import { BookOpenCheck, Brain, Goal, NotebookPen, Package, Star } from "lucide-react";
+import {
+  BookOpenCheck,
+  Brain,
+  Gift,
+  Goal,
+  Info,
+  NotebookPen,
+  Package,
+  ShieldAlert,
+  Star,
+  Trophy,
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type Stats = {
@@ -13,7 +26,17 @@ type Stats = {
   accuracy: number;
 };
 
+function localDayKey(isoDate: string): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 export function DashboardOverview() {
+  const { settings } = useSettings();
   const [stats, setStats] = useState<Stats>({
     builtInPackCount: 0,
     customPackCount: 0,
@@ -32,8 +55,8 @@ export function DashboardOverview() {
         db.sessionHistory.toArray(),
       ]);
 
-      const todayPrefix = new Date().toISOString().slice(0, 10);
-      const sessionsToday = sessions.filter((entry) => entry.completedAt.startsWith(todayPrefix)).length;
+      const todayKey = localDayKey(new Date().toISOString());
+      const sessionsToday = sessions.filter((entry) => localDayKey(entry.completedAt) === todayKey).length;
       const totalItems = sessions.reduce((sum, entry) => sum + entry.totalItems, 0);
       const totalCorrect = sessions.reduce((sum, entry) => sum + entry.correctItems, 0);
 
@@ -56,10 +79,109 @@ export function DashboardOverview() {
     };
   }, []);
 
-  const goalProgress = useMemo(() => Math.min(100, Math.round((stats.sessionsToday / 2) * 100)), [stats.sessionsToday]);
+  const dailyGoalProgress = useMemo(
+    () => Math.min(100, Math.round((stats.sessionsToday / Math.max(settings.dailySessionGoal, 1)) * 100)),
+    [settings.dailySessionGoal, stats.sessionsToday],
+  );
+  const sortedRewards = useMemo(
+    () => [...settings.rewardRules].sort((left, right) => left.targetCompletedPacks - right.targetCompletedPacks),
+    [settings.rewardRules],
+  );
+  const claimedRewardIds = useMemo(() => new Set(settings.claimedRewardRuleIds), [settings.claimedRewardRuleIds]);
+  const nextReward = useMemo(
+    () =>
+      sortedRewards.find(
+        (rule) => !claimedRewardIds.has(rule.id) && stats.sessionsTotal < rule.targetCompletedPacks,
+      ) ??
+      sortedRewards.find((rule) => !claimedRewardIds.has(rule.id)),
+    [claimedRewardIds, sortedRewards, stats.sessionsTotal],
+  );
 
   return (
     <div className="space-y-6">
+      <section className="card p-5">
+        <h2 className="inline-flex items-center gap-2 text-lg font-bold text-slate-800">
+          <Gift className="h-5 w-5 text-brand" />
+          Rewards Progress
+        </h2>
+        <p className="mt-1 text-sm text-slate-600">Completed packs: {stats.sessionsTotal}</p>
+
+        {sortedRewards.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-600">
+            No rewards configured yet. Add rewards in{" "}
+            <Link className="font-semibold text-brand" href="/settings#settings-rewards">
+              Settings
+            </Link>
+            .
+          </p>
+        ) : (
+          <>
+            <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
+              {sortedRewards.map((rule) => {
+                const claimed = claimedRewardIds.has(rule.id);
+                const progress = Math.min(100, Math.round((stats.sessionsTotal / Math.max(rule.targetCompletedPacks, 1)) * 100));
+                const unlocked = stats.sessionsTotal >= rule.targetCompletedPacks;
+
+                return (
+                  <article className="rounded-lg border border-slate-200 bg-slate-50 p-3" key={rule.id}>
+                    <p className="inline-flex items-center gap-1 text-sm font-bold text-slate-800">
+                      {claimed ? <Trophy className="h-4 w-4 text-amber-600" /> : <Gift className="h-4 w-4 text-brand" />}
+                      {rule.title}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">Goal: {rule.targetCompletedPacks} packs</p>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div className={`h-full rounded-full ${claimed || unlocked ? "bg-amber-500" : "bg-brand"}`} style={{ width: `${progress}%` }} />
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600">
+                      {claimed ? "Reward earned" : unlocked ? "Goal reached" : `${rule.targetCompletedPacks - stats.sessionsTotal} to go`}
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
+            {nextReward ? (
+              <p className="mt-3 text-sm text-slate-700">
+                Next reward: <span className="font-bold">{nextReward.title}</span> after{" "}
+                {Math.max(nextReward.targetCompletedPacks - stats.sessionsTotal, 0)} more pack(s).
+              </p>
+            ) : (
+              <p className="mt-3 text-sm font-semibold text-amber-700">All configured rewards are unlocked.</p>
+            )}
+          </>
+        )}
+      </section>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <section className="card p-5 xl:col-span-2">
+          <h2 className="inline-flex items-center gap-2 text-lg font-bold text-slate-800">
+            <Info className="h-5 w-5 text-brand" />
+            Purpose and Getting Started
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            BrightSteps is a calm, visual-first, local-first learning companion for autistic kids and their families. It is designed for predictable routines, low-friction interactions, and caregiver-guided learning.
+          </p>
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-600">
+            <li>Open Settings and choose FactCards or PicturePhrases manager.</li>
+            <li>Create a pack in UI mode or JSON mode and save it.</li>
+            <li>Start with Learn mode (untimed), then move to Review mode (timed quiz).</li>
+            <li>Open Insights from the sidebar to track progress and accuracy trends.</li>
+          </ol>
+        </section>
+
+        <section className="card p-5">
+          <h2 className="inline-flex items-center gap-2 text-lg font-bold text-slate-800">
+            <ShieldAlert className="h-5 w-5 text-brand" />
+            Disclaimer
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Educational tool only. BrightSteps does not provide therapy, diagnosis, or medical advice. For clinical guidance, consult qualified professionals.
+          </p>
+          <p className="mt-3 text-xs text-slate-500">
+            Keep child data private. Avoid uploading sensitive personal information.
+          </p>
+        </section>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="card p-5">
           <p className="inline-flex items-center gap-1 text-sm text-slate-500">
@@ -94,30 +216,53 @@ export function DashboardOverview() {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <section className="card p-5">
           <h2 className="inline-flex items-center gap-2 text-lg font-bold text-slate-800">
-            <Goal className="h-5 w-5 text-[#2badee]" />
+            <Goal className="h-5 w-5 text-brand" />
             Daily Goal
           </h2>
-          <p className="mt-1 text-sm text-slate-600">Target: 2 calm sessions per day.</p>
+          <p className="mt-1 text-sm text-slate-600">Target: {settings.dailySessionGoal} calm sessions per day.</p>
           <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full rounded-full bg-[#2badee]" style={{ width: `${goalProgress}%` }} />
+            <div className="h-full rounded-full bg-brand" style={{ width: `${dailyGoalProgress}%` }} />
           </div>
           <p className="mt-2 text-sm text-slate-700">
-            {stats.sessionsToday} session(s) today ({goalProgress}% of daily goal)
+            {stats.sessionsToday} session(s) today ({dailyGoalProgress}% of daily goal)
           </p>
+          <p className="mt-1 text-xs text-slate-500">Weekly goal configured: {settings.weeklySessionGoal} sessions</p>
         </section>
 
         <section className="card p-5">
           <h2 className="inline-flex items-center gap-2 text-lg font-bold text-slate-800">
-            <Brain className="h-5 w-5 text-[#2badee]" />
+            <Brain className="h-5 w-5 text-brand" />
             Progress Notes
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-600">
             <li>FactCards and PicturePhrases are isolated by module type.</li>
             <li>Runtime remains local-first with no cloud dependency.</li>
-            <li>Use Settings to open FactCards Manager and create or edit packs in full-page editors.</li>
+            <li>Use Settings to open module managers and create/edit packs.</li>
           </ul>
         </section>
       </div>
+
+      <section className="card p-5">
+        <h2 className="text-lg font-bold text-slate-800">Modules and Features</h2>
+        <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <h3 className="text-sm font-bold text-slate-800">FactCards</h3>
+            <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600">
+              <li>Structured question-and-answer cards with optional visuals and audio.</li>
+              <li>Learn mode for guided explanation and reinforcement.</li>
+              <li>Review mode for timed quiz practice with feedback and progression.</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <h3 className="text-sm font-bold text-slate-800">PicturePhrases</h3>
+            <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600">
+              <li>Image-driven sentence building using drag, tap, or type interactions.</li>
+              <li>AI-assisted content generation from uploaded images.</li>
+              <li>Learn mode narration and Review mode sentence-check flow.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

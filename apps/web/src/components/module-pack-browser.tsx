@@ -3,7 +3,7 @@
 import type { ModuleType } from "@brightsteps/content-schema";
 import { db, type CustomPackRecord } from "@/db/client-db";
 import { FactCardsPackThumb } from "@/components/factcards-pack-thumb";
-import { fetchPackSummaries, type PackSummary } from "@/lib/api";
+import { fetchPackSummaries, fetchPicturePhraseSummaries, type PackSummary, type PicturePhraseSummary } from "@/lib/api";
 import { resolvePackThumbnail } from "@/lib/pack-thumbnail";
 import { Package, Play, UserRound } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +16,7 @@ type Props = {
 export function ModulePackBrowser({ moduleType }: Props) {
   const [builtInPacks, setBuiltInPacks] = useState<PackSummary[]>([]);
   const [customPacks, setCustomPacks] = useState<CustomPackRecord[]>([]);
+  const [picturePhrasePacks, setPicturePhrasePacks] = useState<PicturePhraseSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,9 +24,10 @@ export function ModulePackBrowser({ moduleType }: Props) {
 
     async function load() {
       setLoading(true);
-      const [summaries, custom] = await Promise.all([
+      const [summaries, custom, picturePhraseCustom] = await Promise.all([
         fetchPackSummaries(),
         db.customPacks.where("moduleType").equals(moduleType).toArray(),
+        moduleType === "picturephrases" ? fetchPicturePhraseSummaries() : Promise.resolve([]),
       ]);
 
       if (cancelled) {
@@ -34,6 +36,7 @@ export function ModulePackBrowser({ moduleType }: Props) {
 
       setBuiltInPacks(summaries.filter((pack) => pack.moduleType === moduleType));
       setCustomPacks(custom.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
+      setPicturePhrasePacks(picturePhraseCustom.filter((pack) => pack.valid));
       setLoading(false);
     }
 
@@ -54,7 +57,7 @@ export function ModulePackBrowser({ moduleType }: Props) {
     <div className="space-y-6">
       <section>
         <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-bold text-slate-800">
-          <Package className="h-5 w-5 text-[#2badee]" />
+          <Package className="h-5 w-5 text-brand" />
           Built-in {title} Packs
         </h2>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
@@ -80,7 +83,7 @@ export function ModulePackBrowser({ moduleType }: Props) {
 
               {pack.valid ? (
                 <Link
-                  className="mt-4 inline-flex items-center gap-1 rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white"
+                  className="mt-4 inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
                   href={`/session/setup?packId=${encodeURIComponent(pack.packId)}`}
                 >
                   <Play className="h-4 w-4" />
@@ -98,13 +101,46 @@ export function ModulePackBrowser({ moduleType }: Props) {
 
       <section>
         <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-bold text-slate-800">
-          <UserRound className="h-5 w-5 text-[#2badee]" />
-          Custom {title} Packs (Memory)
+          <UserRound className="h-5 w-5 text-brand" />
+          Custom {title} Packs
         </h2>
-        {customPacks.length === 0 ? (
+        {moduleType === "picturephrases" ? (
+          picturePhrasePacks.length === 0 ? (
+            <div className="card p-5 text-sm text-slate-600">
+              No custom PicturePhrases packs yet. Create one in{" "}
+              <Link className="text-brand" href="/settings/picturephrases">
+                PicturePhrases manager
+              </Link>
+              .
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+              {picturePhrasePacks.map((pack) => (
+                <article className="card p-5" key={pack.packId}>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-bold text-slate-900">{pack.title}</h3>
+                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
+                      Custom
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">Topics: {pack.topics.join(", ") || "None"}</p>
+                  <p className="mt-2 text-xs text-slate-500">Updated: {new Date(pack.updatedAt).toLocaleString()}</p>
+                  <p className="mt-1 text-xs text-slate-500">Items: {pack.itemCount}</p>
+                  <Link
+                    className="mt-4 inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
+                    href={`/session/setup?ppPackId=${encodeURIComponent(pack.packId)}`}
+                  >
+                    <Play className="h-4 w-4" />
+                    Start Session
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )
+        ) : customPacks.length === 0 ? (
           <div className="card p-5 text-sm text-slate-600">
             No custom packs yet. Create one in{" "}
-            <Link className="text-[#2badee]" href="/settings/factcards">
+            <Link className="text-brand" href="/settings/factcards">
               FactCards manager
             </Link>
             .
@@ -133,7 +169,7 @@ export function ModulePackBrowser({ moduleType }: Props) {
                   <p className="mt-2 text-xs text-slate-500">Updated: {new Date(pack.updatedAt).toLocaleString()}</p>
                   <p className="mt-1 text-xs text-slate-500">Items: {pack.payload.items.length}</p>
                   <Link
-                    className="mt-4 inline-flex items-center gap-1 rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white"
+                    className="mt-4 inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
                     href={`/session/setup?customPackId=${encodeURIComponent(pack.id)}`}
                   >
                     <Play className="h-4 w-4" />

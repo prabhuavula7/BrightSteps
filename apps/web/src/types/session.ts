@@ -1,5 +1,5 @@
 export type SessionConfig = {
-  durationMinutes: 5 | 10 | 15;
+  durationMinutes: number;
   mode: "learn" | "review";
   supportLevel: "auto" | 0 | 1 | 2 | 3;
   inputType: "tap" | "drag" | "type";

@@ -114,7 +114,7 @@ async function fileToDataUrl(file: File): Promise<string> {
 
 function UploadImageIcon() {
   return (
-    <svg aria-hidden="true" className="h-4 w-4 text-[#2badee]" fill="none" viewBox="0 0 24 24">
+    <svg aria-hidden="true" className="h-4 w-4 text-brand" fill="none" viewBox="0 0 24 24">
       <rect height="14" rx="2" stroke="currentColor" strokeWidth="1.8" width="18" x="3" y="5" />
       <circle cx="9" cy="10" fill="currentColor" r="1.5" />
       <path d="M6.5 17l4.2-4.2a1 1 0 011.4 0L17.5 18" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
@@ -613,7 +613,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
         <div className="mt-4 flex gap-2">
           <button
             className={`rounded px-3 py-1 text-xs font-semibold ${
-              createMethod === "ui" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
+              createMethod === "ui" ? "bg-brand-soft text-brand" : "bg-slate-100 text-slate-600"
             }`}
             onClick={() => {
               setCreateMethod("ui");
@@ -625,7 +625,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
           </button>
           <button
             className={`rounded px-3 py-1 text-xs font-semibold ${
-              createMethod === "json" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
+              createMethod === "json" ? "bg-brand-soft text-brand" : "bg-slate-100 text-slate-600"
             }`}
             onClick={() => {
               setCreateMethod("json");
@@ -720,7 +720,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                       type="file"
                     />
                     <label
-                      className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#2badee] hover:bg-[#2badee]/5"
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand hover:bg-brand-soft"
                       htmlFor="pack-thumbnail-upload"
                     >
                       <UploadImageIcon />
@@ -969,7 +969,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                           type="file"
                         />
                         <label
-                          className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#2badee] hover:bg-[#2badee]/5"
+                          className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand hover:bg-brand-soft"
                           htmlFor={`image-upload-${item.id}`}
                         >
                           <UploadImageIcon />
@@ -1026,7 +1026,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                   Add Card
                 </button>
                 <button
-                  className={`rounded px-3 py-1 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-[#2badee]"}`}
+                  className={`rounded px-3 py-1 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-brand"}`}
                   disabled={saveBusy}
                   onClick={() => void handleSaveFromUi()}
                   type="button"
@@ -1104,7 +1104,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
             Apply JSON to UI
           </button>
           <button
-            className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-[#2badee]"}`}
+            className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-brand"}`}
             disabled={saveBusy}
             onClick={() => void handleSaveFromJson()}
             type="button"
@@ -1149,7 +1149,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                 Leave without saving
               </button>
               <button
-                className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-[#2badee]"}`}
+                className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-brand"}`}
                 disabled={saveBusy}
                 onClick={() => void handleSaveAndLeave()}
                 type="button"
