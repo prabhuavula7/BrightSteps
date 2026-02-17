@@ -78,6 +78,7 @@ const commonPackFields = {
     .object({
       defaultSupportLevel: z.number().int().min(0).max(3).optional(),
       audioEnabledByDefault: z.boolean().optional(),
+      packThumbnailImageRef: z.string().min(1).optional(),
     })
     .optional(),
   assets: z.array(assetSchema),
@@ -177,6 +178,26 @@ export const packSchema = z
               });
             }
           }
+        }
+      }
+    }
+
+    const thumbnailRef = pack.settings?.packThumbnailImageRef;
+    if (thumbnailRef) {
+      if (!assetIds.has(thumbnailRef)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["settings", "packThumbnailImageRef"],
+          message: `Pack thumbnail references missing asset ${thumbnailRef}`,
+        });
+      } else {
+        const asset = pack.assets.find((entry) => entry.id === thumbnailRef);
+        if (asset?.kind !== "image") {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["settings", "packThumbnailImageRef"],
+            message: `Pack thumbnail asset ${thumbnailRef} must be an image`,
+          });
         }
       }
     }

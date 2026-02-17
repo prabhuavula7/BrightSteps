@@ -30,6 +30,8 @@ type PackDraft = {
   language: string;
   ageBand: string;
   topicsCsv: string;
+  thumbnailLink: string;
+  thumbnailDataUrl?: string;
 };
 
 type FactCardsPack = Extract<BrightStepsPack, { moduleType: "factcards" }>;
@@ -46,9 +48,16 @@ const EXAMPLE_JSON = `{
   "topics": ["geography"],
   "settings": {
     "defaultSupportLevel": 2,
-    "audioEnabledByDefault": false
+    "audioEnabledByDefault": false,
+    "packThumbnailImageRef": "pack_thumbnail_image"
   },
   "assets": [
+    {
+      "id": "pack_thumbnail_image",
+      "kind": "image",
+      "path": "https://example.com/globe.png",
+      "alt": "Blue globe icon"
+    },
     {
       "id": "img_france",
       "kind": "image",
@@ -79,6 +88,7 @@ const defaultPackDraft = (): PackDraft => ({
   language: "en",
   ageBand: "6-10",
   topicsCsv: "general",
+  thumbnailLink: "",
 });
 
 const defaultFactItem = (): FactDraftItem => ({
@@ -161,6 +171,11 @@ function mapPackToDraft(
 ): { draft: PackDraft; items: FactDraftItem[] } {
   const assetById = new Map(pack.assets.map((asset) => [asset.id, asset]));
   const resolvedUrlByAssetId = options?.assetUrlById ?? {};
+  const thumbnailRef = pack.settings?.packThumbnailImageRef;
+  const resolvedThumbnailPath = thumbnailRef
+    ? (resolvedUrlByAssetId[thumbnailRef] ?? assetById.get(thumbnailRef)?.path ?? "")
+    : "";
+  const isThumbnailDataUrl = resolvedThumbnailPath.startsWith("data:image/");
   const mappedItems: FactDraftItem[] = pack.items.map((item) => {
     const distractors = item.distractors ?? [];
     const resolvedImagePath = item.media?.imageRef
@@ -193,6 +208,8 @@ function mapPackToDraft(
       language: pack.language,
       ageBand: pack.ageBand,
       topicsCsv: pack.topics.join(", "),
+      thumbnailLink: isThumbnailDataUrl ? "" : resolvedThumbnailPath,
+      thumbnailDataUrl: isThumbnailDataUrl ? resolvedThumbnailPath : undefined,
     },
     items: mappedItems.length > 0 ? mappedItems : [defaultFactItem()],
   };
@@ -205,6 +222,22 @@ function buildPackFromDraft(draft: PackDraft, sourceItems: FactDraftItem[]): Bri
     .filter(Boolean);
 
   const assets: BrightStepsPack["assets"] = [];
+  const settings: NonNullable<BrightStepsPack["settings"]> = {
+    defaultSupportLevel: 2,
+    audioEnabledByDefault: false,
+  };
+
+  const packThumbnailSource = draft.thumbnailDataUrl || draft.thumbnailLink.trim();
+  if (packThumbnailSource) {
+    const thumbnailId = "pack_thumbnail_image";
+    assets.push({
+      id: thumbnailId,
+      kind: "image",
+      path: packThumbnailSource,
+      alt: `Thumbnail for ${draft.title.trim() || "FactCards pack"}`,
+    });
+    settings.packThumbnailImageRef = thumbnailId;
+  }
 
   const factItems = sourceItems.map((item) => {
     const media: { imageRef?: string; promptAudioRef?: string } = {};
@@ -258,10 +291,7 @@ function buildPackFromDraft(draft: PackDraft, sourceItems: FactDraftItem[]): Bri
     language: draft.language.trim() || "en",
     ageBand: draft.ageBand.trim() || "6-10",
     topics: topics.length > 0 ? topics : ["general"],
-    settings: {
-      defaultSupportLevel: 2,
-      audioEnabledByDefault: false,
-    },
+    settings,
     assets,
     items: factItems,
   };
@@ -274,6 +304,16 @@ function buildEditorSnapshot(params: {
   uploadText: string;
 }): string {
   return JSON.stringify(params);
+}
+
+function withResolvedAssetPaths(pack: FactCardsPack, assetUrlById: Record<string, string>): FactCardsPack {
+  return {
+    ...pack,
+    assets: pack.assets.map((asset) => ({
+      ...asset,
+      path: assetUrlById[asset.id] ?? asset.path,
+    })),
+  };
 }
 
 type Props = {
@@ -332,18 +372,23 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
               packIdOverride: `${payload.pack.packId}-custom`,
               assetUrlById: payload.assetUrlById,
             });
+            const resolvedPackWithOverride: FactCardsPack = {
+              ...withResolvedAssetPaths(payload.pack, payload.assetUrlById),
+              packId: `${payload.pack.packId}-custom`,
+            };
+            const resolvedPackJson = JSON.stringify(resolvedPackWithOverride, null, 2);
             const nextSnapshot = buildEditorSnapshot({
               draft: mapped.draft,
               items: mapped.items,
               createMethod: "ui",
-              uploadText: "",
+              uploadText: resolvedPackJson,
             });
 
             if (!cancelled) {
               setDraft(mapped.draft);
               setItems(mapped.items);
               setCreateMethod("ui");
-              setUploadText("");
+              setUploadText(resolvedPackJson);
               setSavedSnapshot(nextSnapshot);
               setLoading(false);
             }
@@ -365,18 +410,19 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
       const mapped = mapPackToDraft(pack, {
         packIdOverride: source === "builtin" ? `${pack.packId}-custom` : pack.packId,
       });
+      const initialJson = JSON.stringify(pack, null, 2);
       const nextSnapshot = buildEditorSnapshot({
         draft: mapped.draft,
         items: mapped.items,
         createMethod: "ui",
-        uploadText: "",
+        uploadText: initialJson,
       });
 
       if (!cancelled) {
         setDraft(mapped.draft);
         setItems(mapped.items);
         setCreateMethod("ui");
-        setUploadText("");
+        setUploadText(initialJson);
         setSavedSnapshot(nextSnapshot);
         setLoading(false);
       }
@@ -527,7 +573,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
 
   async function handleSaveAndLeave() {
     const ok =
-      mode === "create" && createMethod === "json"
+      createMethod === "json"
         ? await handleSaveFromJson({ navigateOnSuccess: false })
         : await handleSaveFromUi({ navigateOnSuccess: false });
     if (ok) {
@@ -564,37 +610,35 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
           </span>
         </div>
 
-        {mode === "create" ? (
-          <div className="mt-4 flex gap-2">
-            <button
-              className={`rounded px-3 py-1 text-xs font-semibold ${
-                createMethod === "ui" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
-              }`}
-              onClick={() => {
-                setCreateMethod("ui");
-                setStatus("");
-              }}
-              type="button"
-            >
-              Create via UI
-            </button>
-            <button
-              className={`rounded px-3 py-1 text-xs font-semibold ${
-                createMethod === "json" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
-              }`}
-              onClick={() => {
-                setCreateMethod("json");
-                setStatus("");
-              }}
-              type="button"
-            >
-              Create via JSON
-            </button>
-          </div>
-        ) : null}
+        <div className="mt-4 flex gap-2">
+          <button
+            className={`rounded px-3 py-1 text-xs font-semibold ${
+              createMethod === "ui" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
+            }`}
+            onClick={() => {
+              setCreateMethod("ui");
+              setStatus("");
+            }}
+            type="button"
+          >
+            {mode === "create" ? "Create via UI" : "Edit via UI"}
+          </button>
+          <button
+            className={`rounded px-3 py-1 text-xs font-semibold ${
+              createMethod === "json" ? "bg-[#2badee]/10 text-[#2badee]" : "bg-slate-100 text-slate-600"
+            }`}
+            onClick={() => {
+              setCreateMethod("json");
+              setStatus("");
+            }}
+            type="button"
+          >
+            {mode === "create" ? "Create via JSON" : "Edit via JSON"}
+          </button>
+        </div>
       </div>
 
-      {(mode === "edit" || createMethod === "ui") && (
+      {createMethod === "ui" && (
         <section className="card p-5">
           {loading ? (
             <p className="text-sm text-slate-600">Loading editor...</p>
@@ -634,6 +678,81 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                   value={draft.description}
                 />
               </label>
+
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-600">Pack thumbnail</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  This image appears on the FactCards pack menu card. Use a web link or upload from your computer.
+                </p>
+                <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+                  <label className="space-y-1 text-sm text-slate-700" htmlFor="pack-thumbnail-link">
+                    <span className="font-semibold">Thumbnail link (internet URL)</span>
+                    <input
+                      className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                      id="pack-thumbnail-link"
+                      onChange={(event) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          thumbnailLink: event.target.value,
+                          thumbnailDataUrl: undefined,
+                        }))
+                      }
+                      placeholder="https://example.com/globe.png"
+                      value={draft.thumbnailLink}
+                    />
+                  </label>
+
+                  <div className="flex flex-wrap items-end gap-2">
+                    <input
+                      accept="image/*"
+                      className="sr-only"
+                      id="pack-thumbnail-upload"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (!file) {
+                          return;
+                        }
+                        void (async () => {
+                          const data = await fileToDataUrl(file);
+                          setDraft((prev) => ({ ...prev, thumbnailDataUrl: data }));
+                        })();
+                      }}
+                      type="file"
+                    />
+                    <label
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#2badee] hover:bg-[#2badee]/5"
+                      htmlFor="pack-thumbnail-upload"
+                    >
+                      <UploadImageIcon />
+                      Upload thumbnail
+                    </label>
+                    <button
+                      className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      onClick={() => setDraft((prev) => ({ ...prev, thumbnailLink: "", thumbnailDataUrl: undefined }))}
+                      type="button"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+
+                {draft.thumbnailDataUrl || draft.thumbnailLink.trim() ? (
+                  <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
+                    <p className="text-xs font-semibold text-slate-700">Thumbnail preview</p>
+                    <div className="relative mt-2 h-44 w-full overflow-hidden rounded-md border border-slate-200 md:h-52">
+                      <Image
+                        alt="FactCards pack thumbnail preview"
+                        className="object-cover"
+                        fill
+                        loader={({ src }) => src}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        src={draft.thumbnailDataUrl || draft.thumbnailLink.trim()}
+                        unoptimized
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
 
               <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <label className="space-y-1 text-sm text-slate-700" htmlFor="pack-language">
@@ -816,7 +935,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                       {item.imageDataUrl || item.imageLink.trim() ? (
                         <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2">
                           <p className="text-xs font-semibold text-slate-700">Image preview</p>
-                          <div className="relative mt-2 h-28 w-full overflow-hidden rounded-md border border-slate-200">
+                          <div className="relative mt-2 h-44 w-full overflow-hidden rounded-md border border-slate-200 md:h-52">
                             <Image
                               alt={`Preview for card ${index + 1}`}
                               className="object-cover"
@@ -932,64 +1051,78 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
         </section>
       )}
 
-      {mode === "create" ? (
-        <section className="card p-5">
-          <h3 className="text-sm font-bold uppercase tracking-wide text-slate-600">JSON Workspace</h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Upload JSON packs, save directly, or apply JSON into the UI editor for visual editing.
-          </p>
+      <section className="card p-5">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-slate-600">JSON Workspace</h3>
+        <p className="mt-1 text-sm text-slate-600">
+          {mode === "create"
+            ? "Upload JSON packs, save directly, or apply JSON into the UI editor for visual editing."
+            : "Edit this existing deck directly in JSON, then apply to UI or save back to local memory."}
+        </p>
 
-          <label className="mt-3 block text-sm text-slate-700">
-            Upload JSON file
-            <input
-              accept="application/json,.json"
-              className="mt-1 block w-full"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) {
-                  void handleJsonUpload(file);
-                }
-              }}
-              type="file"
-            />
-          </label>
-
-          <textarea
-            className="mt-3 h-52 w-full rounded-lg border border-slate-300 p-2 text-xs"
-            onChange={(event) => setUploadText(event.target.value)}
-            placeholder="Paste FactCards JSON here"
-            value={uploadText}
+        <label className="mt-3 block text-sm text-slate-700">
+          Upload JSON file
+          <input
+            accept="application/json,.json"
+            className="mt-1 block w-full"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                void handleJsonUpload(file);
+              }
+            }}
+            type="file"
           />
+        </label>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
-              onClick={handleApplyJsonToUi}
-              type="button"
-            >
-              Apply JSON to UI
-            </button>
-            <button
-              className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-[#2badee]"}`}
-              disabled={saveBusy}
-              onClick={() => void handleSaveFromJson()}
-              type="button"
-            >
-              {saveBusy ? "Saving..." : "Save JSON Pack"}
-            </button>
-            {createMethod === "ui" ? (
-              <p className="self-center text-xs text-slate-500">
-                Tip: switch to <strong>JSON mode</strong> above when you want to author directly in JSON.
-              </p>
-            ) : null}
-          </div>
+        <textarea
+          className="mt-3 h-56 w-full rounded-lg border border-slate-300 p-2 text-xs"
+          onChange={(event) => {
+            setCreateMethod("json");
+            setUploadText(event.target.value);
+          }}
+          placeholder="Paste FactCards JSON here"
+          value={uploadText}
+        />
 
-          <h4 className="mt-5 text-xs font-bold uppercase text-slate-600">Example JSON Format</h4>
-          <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-[11px] text-slate-100">
-            <code>{EXAMPLE_JSON}</code>
-          </pre>
-        </section>
-      ) : null}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
+            onClick={() => {
+              setCreateMethod("json");
+              setUploadText(generatedJsonFromUi);
+              setStatus("Loaded current UI JSON into the editable JSON workspace.");
+            }}
+            type="button"
+          >
+            Load current UI JSON
+          </button>
+          <button
+            className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
+            onClick={handleApplyJsonToUi}
+            type="button"
+          >
+            Apply JSON to UI
+          </button>
+          <button
+            className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-[#2badee]"}`}
+            disabled={saveBusy}
+            onClick={() => void handleSaveFromJson()}
+            type="button"
+          >
+            {saveBusy ? "Saving..." : "Save JSON Pack"}
+          </button>
+          {mode === "create" && createMethod === "ui" ? (
+            <p className="self-center text-xs text-slate-500">
+              Tip: switch to <strong>JSON mode</strong> above when you want to author directly in JSON.
+            </p>
+          ) : null}
+        </div>
+
+        <h4 className="mt-5 text-xs font-bold uppercase text-slate-600">Example JSON Format</h4>
+        <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-[11px] text-slate-100">
+          <code>{EXAMPLE_JSON}</code>
+        </pre>
+      </section>
 
       {status ? <p className="text-sm text-slate-700">{status}</p> : null}
 

@@ -13,7 +13,7 @@ import { db } from "@/db/client-db";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SessionConfig } from "@/types/session";
-import { CheckCircle2, Clock3, LoaderCircle, OctagonX, XCircle } from "lucide-react";
+import { CheckCircle2, Clock3, LoaderCircle, OctagonX, Volume2, XCircle } from "lucide-react";
 
 function DraggableWord({ word, id, onClick }: { word: string; id: string; onClick: () => void }) {
   return (
@@ -33,6 +33,29 @@ function DropZone({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-16 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-3">
       {children}
+    </div>
+  );
+}
+
+function AudioTrackPreview({ src }: { src: string }) {
+  const bars = [32, 48, 36, 54, 40, 58, 34, 52, 44, 30];
+
+  return (
+    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+      <div className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800">
+        <Volume2 className="h-4 w-4" />
+        Audio Prompt
+      </div>
+      <div aria-hidden className="mt-3 flex h-14 items-end gap-1.5 rounded-md border border-emerald-100 bg-white px-2">
+        {bars.map((height, index) => (
+          <span
+            className="w-1.5 rounded-full bg-emerald-400/80"
+            key={`bar-${index}`}
+            style={{ height: `${height}%` }}
+          />
+        ))}
+      </div>
+      <audio className="mt-3 w-full" controls preload="none" src={src} />
     </div>
   );
 }
@@ -379,6 +402,14 @@ export function SessionPlayer({ pack, assetUrlById, config }: Props) {
     currentItem.type === "factcard" && currentItem.media?.imageRef
       ? assetSrcById[currentItem.media.imageRef]
       : undefined;
+  const factAudioSrc =
+    currentItem.type === "factcard"
+      ? currentItem.media?.promptAudioRef
+        ? assetSrcById[currentItem.media.promptAudioRef]
+        : currentItem.media?.answerAudioRef
+          ? assetSrcById[currentItem.media.answerAudioRef]
+          : undefined
+      : undefined;
 
   const pictureImageSrc =
     currentItem.type === "picturephrase" ? assetSrcById[currentItem.media.imageRef] : undefined;
@@ -429,13 +460,24 @@ export function SessionPlayer({ pack, assetUrlById, config }: Props) {
 
           <h2 className="text-2xl font-bold text-slate-900">{(currentItem as FactCardItem).prompt}</h2>
 
-          {factImageSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt="Visual support"
-              className="h-56 w-full rounded-lg border border-slate-200 object-contain bg-white"
-              src={factImageSrc}
-            />
+          {factImageSrc || factAudioSrc ? (
+            <div className={`grid gap-3 ${factImageSrc && factAudioSrc ? "md:grid-cols-2" : "grid-cols-1"}`}>
+              {factImageSrc ? (
+                <div className="rounded-lg border border-slate-200 bg-white p-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">Visual Support</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt="Visual support"
+                    className={`mt-2 w-full rounded-lg border border-slate-200 bg-white object-contain ${
+                      factAudioSrc ? "h-48" : "h-64"
+                    }`}
+                    src={factImageSrc}
+                  />
+                </div>
+              ) : null}
+
+              {factAudioSrc ? <AudioTrackPreview src={factAudioSrc} /> : null}
+            </div>
           ) : null}
 
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">

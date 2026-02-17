@@ -9,6 +9,8 @@ export type PackSummary = {
   topics: string[];
   itemCount: number;
   description?: string;
+  thumbnailUrl?: string;
+  thumbnailAlt?: string;
   valid: boolean;
   issues?: string[];
 };
@@ -91,6 +93,8 @@ export async function listPackSummaries(): Promise<PackSummary[]> {
           moduleType: pack.moduleType,
           topics: pack.topics,
           itemCount: pack.items.length,
+          thumbnailUrl: getPackThumbnailUrl(packId, pack),
+          thumbnailAlt: getPackThumbnailAlt(pack),
           valid: true,
         } as PackSummary;
       } catch (error) {
@@ -108,6 +112,38 @@ export async function listPackSummaries(): Promise<PackSummary[]> {
   );
 
   return summaries;
+}
+
+function getPackThumbnailUrl(packId: string, pack: BrightStepsPack): string | undefined {
+  const imageRef = pack.settings?.packThumbnailImageRef;
+  if (!imageRef) {
+    return undefined;
+  }
+
+  const asset = pack.assets.find((entry) => entry.id === imageRef && entry.kind === "image");
+  if (!asset) {
+    return undefined;
+  }
+
+  if (
+    asset.path.startsWith("http://") ||
+    asset.path.startsWith("https://") ||
+    asset.path.startsWith("data:") ||
+    asset.path.startsWith("/")
+  ) {
+    return asset.path;
+  }
+
+  return buildAssetUrl(packId, asset.path);
+}
+
+function getPackThumbnailAlt(pack: BrightStepsPack): string | undefined {
+  const imageRef = pack.settings?.packThumbnailImageRef;
+  if (!imageRef) {
+    return undefined;
+  }
+
+  return pack.assets.find((entry) => entry.id === imageRef && entry.kind === "image")?.alt;
 }
 
 export async function resolvePackAssetPath(packId: string, relativePath: string): Promise<string> {

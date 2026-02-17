@@ -83,8 +83,8 @@ export function SessionSetupClient() {
 
       {state ? (
         <>
-          <div className="mb-4">
-            <h1 className="text-2xl font-black text-slate-900">{state.title}</h1>
+          <div className="mb-4 sm:mb-5">
+            <h1 className="text-2xl font-black text-slate-900 sm:text-3xl">{state.title}</h1>
             <p className="text-sm text-slate-600">
               Configure your {state.moduleType === "factcards" ? "FactCards" : "PicturePhrases"} session.
             </p>

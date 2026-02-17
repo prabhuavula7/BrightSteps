@@ -80,4 +80,46 @@ describe("pack validation", () => {
       expect(result.issues.some((issue) => issue.message.includes("missing asset"))).toBe(true);
     }
   });
+
+  it("rejects missing pack thumbnail asset refs", () => {
+    const invalidPack = {
+      ...validFactcardsPack,
+      settings: {
+        packThumbnailImageRef: "missing_thumb",
+      },
+    };
+
+    const result = validatePack(invalidPack);
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.issues.some((issue) => issue.message.includes("Pack thumbnail references missing asset"))).toBe(
+        true,
+      );
+    }
+  });
+
+  it("rejects non-image pack thumbnail assets", () => {
+    const invalidPack = {
+      ...validFactcardsPack,
+      assets: [
+        ...validFactcardsPack.assets,
+        {
+          id: "audio_thumb",
+          kind: "audio",
+          path: "assets/audio/thumb.mp3",
+        },
+      ],
+      settings: {
+        packThumbnailImageRef: "audio_thumb",
+      },
+    };
+
+    const result = validatePack(invalidPack);
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.issues.some((issue) => issue.message.includes("must be an image"))).toBe(true);
+    }
+  });
 });

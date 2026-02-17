@@ -69,10 +69,10 @@ export function ProgressSettingsPanel() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       <section className="card p-6">
         <h2 className="text-xl font-bold text-slate-900">Progress Pulse</h2>
-        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+        <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div className="rounded-lg bg-slate-50 p-3">
             <dt className="text-slate-500">Sessions</dt>
             <dd className="text-xl font-bold text-slate-900">{summary.totalSessions}</dd>

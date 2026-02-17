@@ -12,6 +12,8 @@ export type PackSummary = {
   topics: string[];
   itemCount: number;
   description?: string;
+  thumbnailUrl?: string;
+  thumbnailAlt?: string;
   valid: boolean;
   issues?: string[];
 };

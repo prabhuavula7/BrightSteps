@@ -93,7 +93,7 @@ export function SettingsHome() {
           View packs, edit existing packs, or create a new pack with UI or JSON upload.
         </p>
         <Link
-          className="mt-4 inline-flex rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white"
+          className="mt-4 inline-flex w-full justify-center rounded-lg bg-[#2badee] px-4 py-2 text-sm font-bold text-white sm:w-auto"
           href="/settings/factcards"
         >
           Open FactCards Manager
@@ -109,7 +109,7 @@ export function SettingsHome() {
           Dedicated management flow is available as a separate page. We can extend editor tooling next.
         </p>
         <Link
-          className="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+          className="mt-4 inline-flex w-full justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 sm:w-auto"
           href="/settings/picturephrases"
         >
           Open PicturePhrases Page
