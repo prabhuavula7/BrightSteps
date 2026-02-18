@@ -5,7 +5,7 @@ export default function InsightsPage() {
   return (
     <AppShell
       title="Insights"
-      subtitle="Track progress and accuracy trends across days, weeks, and months."
+      subtitle="Switch between multiple learning graphs and explore week, month, year, and all-time trends."
     >
       <InsightsOverview />
     </AppShell>

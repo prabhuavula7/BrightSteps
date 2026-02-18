@@ -35,6 +35,7 @@ export type SessionHistoryRecord = {
   id?: number;
   packId: string;
   moduleType: ModuleType;
+  mode?: "learn" | "review";
   startedAt: string;
   completedAt: string;
   durationMinutes: number;

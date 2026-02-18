@@ -315,6 +315,7 @@ export function SessionPlayer({ pack, assetUrlById, config }: Props) {
     await db.sessionHistory.add({
       packId: pack.packId,
       moduleType: pack.moduleType,
+      mode: config.mode,
       startedAt: sessionStartedAtIso,
       completedAt: new Date().toISOString(),
       durationMinutes: isReviewMode ? config.durationMinutes : elapsedMinutes,
