@@ -53,6 +53,8 @@ PicturePhrases is an image-based sentence-building module.
 - Rewards progress at the top of dashboard
 - Insights page for progress and accuracy trends
 
+![BrightSteps Insights](public/insights.png)
+
 ## Rewards
 
 Caregivers can define rewards in Settings:
