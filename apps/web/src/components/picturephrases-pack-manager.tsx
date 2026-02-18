@@ -5,7 +5,8 @@ import {
   fetchPicturePhraseSummaries,
   type PicturePhraseSummary,
 } from "@/lib/api";
-import { Pencil, Play, Plus, Trash2 } from "lucide-react";
+import { FactCardsPackThumb } from "@/components/factcards-pack-thumb";
+import { ArrowLeft, Pencil, Play, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -66,7 +67,16 @@ export function PicturePhrasesPackManager() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-bold text-slate-900">PicturePhrases Packs</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            href="/settings?section=modules#settings-modules"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Module Settings
+          </Link>
+          <h2 className="text-xl font-bold text-slate-900">PicturePhrases Packs</h2>
+        </div>
         <Link
           className="inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
           href="/settings/picturephrases/create"
@@ -86,6 +96,12 @@ export function PicturePhrasesPackManager() {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
           {packs.map((pack) => (
             <article className="card flex flex-col gap-3 p-5" key={pack.packId}>
+              <FactCardsPackThumb
+                thumbnailAlt={pack.thumbnailAlt}
+                thumbnailSrc={pack.thumbnailUrl}
+                title={pack.title}
+                topics={pack.topics}
+              />
               <div className="flex items-start justify-between gap-3">
                 <h3 className="text-lg font-bold text-slate-900">{pack.title}</h3>
                 <span

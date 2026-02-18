@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+  <rect width='800' height='500' fill='#eef2ff'/>
+  <rect x='80' y='120' width='640' height='280' rx='24' fill='#dbeafe' stroke='#2563eb' stroke-width='8'/>
+  <path d='M310 170h180v50l90 160a30 30 0 0 1-26 45H246a30 30 0 0 1-26-45l90-160z' fill='#93c5fd' stroke='#1d4ed8' stroke-width='8'/>
+  <circle cx='350' cy='280' r='22' fill='#22c55e'/>
+  <circle cx='430' cy='315' r='18' fill='#f59e0b'/>
+  <circle cx='470' cy='260' r='14' fill='#ef4444'/>
+  <text x='400' y='85' text-anchor='middle' font-size='56' font-family='Verdana, sans-serif' fill='#1e3a8a'>Laboratory</text>
+</svg>

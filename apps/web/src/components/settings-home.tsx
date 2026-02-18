@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   Palette,
   PlusCircle,
+  Mic,
   RotateCcw,
   ShieldAlert,
   SlidersHorizontal,
@@ -180,14 +181,54 @@ export function SettingsHome() {
     window.location.reload();
   }
 
-  function jumpTo(section: typeof activeSection) {
-    setActiveSection(section);
-    const element = document.getElementById(`settings-${section}`);
-    if (!element) {
+  const jumpTo = useCallback(
+    (section: typeof activeSection) => {
+      setActiveSection(section);
+      const element = document.getElementById(`settings-${section}`);
+      if (!element) {
+        return;
+      }
+      element.scrollIntoView({ behavior: settings.reducedMotion ? "auto" : "smooth", block: "start" });
+    },
+    [settings.reducedMotion],
+  );
+
+  useEffect(() => {
+    if (!loaded) {
       return;
     }
-    element.scrollIntoView({ behavior: settings.reducedMotion ? "auto" : "smooth", block: "start" });
-  }
+
+    const querySection =
+      typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("section") : null;
+    const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
+    const targetFromQuery =
+      querySection === "goals" ||
+      querySection === "calm" ||
+      querySection === "theme" ||
+      querySection === "rewards" ||
+      querySection === "modules" ||
+      querySection === "data"
+        ? querySection
+        : null;
+    const targetFromHash =
+      hash === "settings-goals" ||
+      hash === "settings-calm" ||
+      hash === "settings-theme" ||
+      hash === "settings-rewards" ||
+      hash === "settings-modules" ||
+      hash === "settings-data"
+        ? hash.replace("settings-", "")
+        : null;
+
+    const target = (targetFromQuery ?? targetFromHash) as typeof activeSection | null;
+    if (!target) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      jumpTo(target);
+    });
+  }, [jumpTo, loaded]);
 
   if (!loaded) {
     return <div className="card p-5 text-sm text-slate-600">Loading settings...</div>;
@@ -451,14 +492,19 @@ export function SettingsHome() {
 
         <section className="card p-5" id="settings-modules">
           <h2 className="text-lg font-bold text-slate-900">Module Managers</h2>
-          <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <h3 className="inline-flex items-center gap-2 text-base font-bold text-slate-900">
                 <BookText className="h-4 w-4 text-brand" />
                 FactCards Packs
               </h3>
-              <p className="mt-2 text-sm text-slate-600">Create and edit packs with UI or JSON workflows.</p>
-              <Link className="mt-4 inline-flex rounded-lg bg-brand px-4 py-2 text-sm font-bold text-on-brand hover:bg-brand-strong" href="/settings/factcards">
+              <p className="mt-2 text-sm text-slate-600">
+                Build question-and-answer decks with optional images, audio prompts, hints, and thumbnails.
+              </p>
+              <Link
+                className="mt-4 inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-brand-strong"
+                href="/settings/factcards"
+              >
                 Open FactCards Manager
               </Link>
             </article>
@@ -469,8 +515,25 @@ export function SettingsHome() {
                 PicturePhrases Packs
               </h3>
               <p className="mt-2 text-sm text-slate-600">Upload images, run AI once, and manage generated cards.</p>
-              <Link className="mt-4 inline-flex rounded-lg bg-brand px-4 py-2 text-sm font-bold text-on-brand hover:bg-brand-strong" href="/settings/picturephrases">
+              <Link
+                className="mt-4 inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-brand-strong"
+                href="/settings/picturephrases"
+              >
                 Open PicturePhrases Manager
+              </Link>
+            </article>
+
+            <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <h3 className="inline-flex items-center gap-2 text-base font-bold text-slate-900">
+                <Mic className="h-4 w-4 text-brand" />
+                VocabVoice Packs
+              </h3>
+              <p className="mt-2 text-sm text-slate-600">Generate syllables, definitions, and voice prompts once at pack creation.</p>
+              <Link
+                className="mt-4 inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-brand-strong"
+                href="/settings/vocabulary"
+              >
+                Open VocabVoice Manager
               </Link>
             </article>
           </div>

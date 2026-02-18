@@ -4,7 +4,7 @@ import type { BrightStepsPack } from "@brightsteps/content-schema";
 import { SessionPlayer } from "@/components/session-player";
 import { TopNav } from "@/components/top-nav";
 import { db } from "@/db/client-db";
-import { fetchPack, fetchPicturePhrasePack, type PackPayload } from "@/lib/api";
+import { fetchPack, fetchPicturePhrasePack, fetchVocabPack, type PackPayload } from "@/lib/api";
 import type { SessionConfig } from "@/types/session";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -33,7 +33,7 @@ function parseSessionConfig(searchParams: URLSearchParams): SessionConfig {
 }
 
 export default function SessionPage() {
-  const params = useParams<{ module: "factcards" | "picturephrases"; packId: string }>();
+  const params = useParams<{ module: "factcards" | "picturephrases" | "vocabvoice"; packId: string }>();
   const searchParams = useSearchParams();
   const [pack, setPack] = useState<BrightStepsPack | null>(null);
   const [assetUrlById, setAssetUrlById] = useState<Record<string, string>>({});
@@ -48,7 +48,14 @@ export default function SessionPage() {
       setError("");
       setPack(null);
       const sourceRaw = searchParams.get("source");
-      const source = sourceRaw === "custom" ? "custom" : sourceRaw === "picturephrases" ? "picturephrases" : "builtin";
+      const source =
+        sourceRaw === "custom"
+          ? "custom"
+          : sourceRaw === "picturephrases"
+            ? "picturephrases"
+            : sourceRaw === "vocabvoice"
+              ? "vocabvoice"
+              : "builtin";
 
       if (source === "custom") {
         const record = await db.customPacks.get(params.packId);
@@ -87,6 +94,26 @@ export default function SessionPage() {
           setAssetUrlById(payload.assetUrlById);
         } catch {
           setError("PicturePhrases pack could not be loaded.");
+        }
+        return;
+      }
+
+      if (source === "vocabvoice") {
+        try {
+          const payload = await fetchVocabPack(params.packId);
+          if (payload.summary.valid !== true) {
+            setError("VocabVoice pack is not ready. Run AI processing or fix JSON first.");
+            return;
+          }
+
+          if (cancelled) {
+            return;
+          }
+
+          setPack(payload.pack as BrightStepsPack);
+          setAssetUrlById(payload.assetUrlById);
+        } catch {
+          setError("VocabVoice pack could not be loaded.");
         }
         return;
       }

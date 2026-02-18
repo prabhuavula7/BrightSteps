@@ -53,7 +53,7 @@ export type CustomPackRecord = {
   updatedAt: string;
 };
 
-export type ModuleType = "factcards" | "picturephrases";
+export type ModuleType = "factcards" | "picturephrases" | "vocabvoice";
 
 export type ReviewState = {
   itemId: string;

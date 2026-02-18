@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+  <rect width='800' height='500' fill='#fff7ed'/>
+  <rect x='120' y='110' width='560' height='300' rx='24' fill='#ffedd5' stroke='#ea580c' stroke-width='8'/>
+  <rect x='160' y='170' width='480' height='26' rx='13' fill='#fed7aa'/>
+  <rect x='160' y='225' width='430' height='26' rx='13' fill='#fed7aa'/>
+  <rect x='160' y='280' width='460' height='26' rx='13' fill='#fed7aa'/>
+  <rect x='160' y='335' width='390' height='26' rx='13' fill='#fed7aa'/>
+  <text x='400' y='85' text-anchor='middle' font-size='56' font-family='Verdana, sans-serif' fill='#9a3412'>Literally</text>
+</svg>

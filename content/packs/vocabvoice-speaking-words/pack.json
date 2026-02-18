@@ -1,0 +1,252 @@
+{
+  "schemaVersion": "2.0.0",
+  "packId": "vocabvoice-speaking-words-001",
+  "moduleType": "vocabvoice",
+  "title": "Speaking Words Practice",
+  "description": "Five focus words with image support and AI-generated pronunciation guidance: Laboratory, Airplane, Literally, Helpful, Excuse.",
+  "version": "1.0.0",
+  "language": "en",
+  "ageBand": "6-10",
+  "topics": [
+    "language",
+    "science",
+    "travel",
+    "social"
+  ],
+  "settings": {
+    "defaultSupportLevel": 2,
+    "audioEnabledByDefault": true,
+    "packThumbnailImageRef": "img_laboratory"
+  },
+  "assets": [
+    {
+      "id": "img_laboratory",
+      "kind": "image",
+      "path": "assets/images/laboratory.svg",
+      "alt": "Laboratory illustration"
+    },
+    {
+      "id": "img_airplane",
+      "kind": "image",
+      "path": "assets/images/airplane.svg",
+      "alt": "Airplane illustration"
+    },
+    {
+      "id": "img_literally",
+      "kind": "image",
+      "path": "assets/images/literally.svg",
+      "alt": "Literally illustration"
+    },
+    {
+      "id": "img_helpful",
+      "kind": "image",
+      "path": "assets/images/helpful.svg",
+      "alt": "Helpful illustration"
+    },
+    {
+      "id": "img_excuse",
+      "kind": "image",
+      "path": "assets/images/excuse.svg",
+      "alt": "Excuse illustration"
+    },
+    {
+      "id": "vv_asset_ba866a0d996946fc9ffd9d4322829159",
+      "kind": "audio",
+      "path": "assets/audio/laboratory.mp3",
+      "transcript": "Laboratory"
+    },
+    {
+      "id": "vv_asset_aeb37000dcb84ea79f0f33e0fa404d13",
+      "kind": "audio",
+      "path": "assets/audio/airplane.mp3",
+      "transcript": "Airplane"
+    },
+    {
+      "id": "vv_asset_2e52423d817246b39e3f4957efe236ee",
+      "kind": "audio",
+      "path": "assets/audio/literally.mp3",
+      "transcript": "Literally"
+    },
+    {
+      "id": "vv_asset_28db65ab2df44934b9d71a3cb85b09ca",
+      "kind": "audio",
+      "path": "assets/audio/helpful.mp3",
+      "transcript": "Helpful"
+    },
+    {
+      "id": "vv_asset_77eef1f890d943ef8f174436da431279",
+      "kind": "audio",
+      "path": "assets/audio/excuse.mp3",
+      "transcript": "Excuse"
+    }
+  ],
+  "items": [
+    {
+      "id": "vw_seed_001",
+      "type": "vocabword",
+      "topic": "science",
+      "word": "Laboratory",
+      "syllables": [
+        "labor",
+        "atory"
+      ],
+      "definition": "Laboratory is a vocabulary word in the science topic.",
+      "exampleSentence": "We say the word Laboratory clearly.",
+      "review": {
+        "sentencePrompt": "Say the word Laboratory.",
+        "acceptedPronunciations": [
+          "laboratory"
+        ]
+      },
+      "hints": [
+        "Try saying Laboratory slowly.",
+        "Break Laboratory into small parts."
+      ],
+      "media": {
+        "pronunciationAudioRef": "vv_asset_ba866a0d996946fc9ffd9d4322829159",
+        "imageRef": "img_laboratory"
+      },
+      "partOfSpeech": "word",
+      "aiMeta": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "promptVersion": "vocab-v1",
+        "generatedAt": "2026-02-18T07:00:13.246Z"
+      }
+    },
+    {
+      "id": "vw_seed_002",
+      "type": "vocabword",
+      "topic": "travel",
+      "word": "Airplane",
+      "syllables": [
+        "air",
+        "plane"
+      ],
+      "definition": "An airplane is a machine that flies in the sky.",
+      "exampleSentence": "The airplane flew high above the clouds.",
+      "review": {
+        "sentencePrompt": "Say the word 'airplane'.",
+        "acceptedPronunciations": [
+          "airplane"
+        ]
+      },
+      "hints": [
+        "Airplanes have wings.",
+        "People travel inside airplanes.",
+        "Airplanes land at airports."
+      ],
+      "media": {
+        "pronunciationAudioRef": "vv_asset_aeb37000dcb84ea79f0f33e0fa404d13",
+        "imageRef": "img_airplane"
+      },
+      "partOfSpeech": "noun",
+      "aiMeta": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "promptVersion": "vocab-v1",
+        "generatedAt": "2026-02-18T07:00:22.845Z"
+      }
+    },
+    {
+      "id": "vw_seed_003",
+      "type": "vocabword",
+      "topic": "language",
+      "word": "Literally",
+      "syllables": [
+        "lite",
+        "rally"
+      ],
+      "definition": "Literally is a vocabulary word in the language topic.",
+      "exampleSentence": "We say the word Literally clearly.",
+      "review": {
+        "sentencePrompt": "Say the word Literally.",
+        "acceptedPronunciations": [
+          "literally"
+        ]
+      },
+      "hints": [
+        "Try saying Literally slowly.",
+        "Break Literally into small parts."
+      ],
+      "media": {
+        "pronunciationAudioRef": "vv_asset_2e52423d817246b39e3f4957efe236ee",
+        "imageRef": "img_literally"
+      },
+      "partOfSpeech": "word",
+      "aiMeta": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "promptVersion": "vocab-v1",
+        "generatedAt": "2026-02-18T07:00:30.881Z"
+      }
+    },
+    {
+      "id": "vw_seed_004",
+      "type": "vocabword",
+      "topic": "social",
+      "word": "Helpful",
+      "syllables": [
+        "help",
+        "ful"
+      ],
+      "definition": "Giving help to someone.",
+      "exampleSentence": "The girl was helpful when she held the door open.",
+      "review": {
+        "sentencePrompt": "Say 'helpful'.",
+        "acceptedPronunciations": [
+          "helpful"
+        ]
+      },
+      "hints": [
+        "It means giving help.",
+        "You can be helpful to others.",
+        "Being helpful is a kind action."
+      ],
+      "media": {
+        "pronunciationAudioRef": "vv_asset_28db65ab2df44934b9d71a3cb85b09ca",
+        "imageRef": "img_helpful"
+      },
+      "partOfSpeech": "adjective",
+      "aiMeta": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "promptVersion": "vocab-v1",
+        "generatedAt": "2026-02-18T07:00:39.188Z"
+      }
+    },
+    {
+      "id": "vw_seed_005",
+      "type": "vocabword",
+      "topic": "social",
+      "word": "Excuse",
+      "syllables": [
+        "exc",
+        "use"
+      ],
+      "definition": "Excuse is a vocabulary word in the social topic.",
+      "exampleSentence": "We say the word Excuse clearly.",
+      "review": {
+        "sentencePrompt": "Say the word Excuse.",
+        "acceptedPronunciations": [
+          "excuse"
+        ]
+      },
+      "hints": [
+        "Try saying Excuse slowly.",
+        "Break Excuse into small parts."
+      ],
+      "media": {
+        "pronunciationAudioRef": "vv_asset_77eef1f890d943ef8f174436da431279",
+        "imageRef": "img_excuse"
+      },
+      "partOfSpeech": "word",
+      "aiMeta": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "promptVersion": "vocab-v1",
+        "generatedAt": "2026-02-18T07:00:49.173Z"
+      }
+    }
+  ]
+}

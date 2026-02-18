@@ -13,6 +13,8 @@ export type PicturePhrasePackSummary = {
   description?: string;
   topics: string[];
   itemCount: number;
+  thumbnailUrl?: string;
+  thumbnailAlt?: string;
   valid: boolean;
   issues?: string[];
   updatedAt: string;
@@ -191,6 +193,22 @@ export function summarizePicturePhrasePack(record: PicturePhrasePackRecord): Pic
     ? payloadObject.topics.map((topic) => String(topic)).filter(Boolean)
     : [];
   const rawItems = Array.isArray(payloadObject.items) ? payloadObject.items : [];
+  const settings =
+    payloadObject.settings && typeof payloadObject.settings === "object"
+      ? (payloadObject.settings as Record<string, unknown>)
+      : null;
+  const thumbnailRef =
+    settings && typeof settings.packThumbnailImageRef === "string" ? settings.packThumbnailImageRef : "";
+  const assets = Array.isArray(payloadObject.assets) ? payloadObject.assets : [];
+  const thumbnailAsset = assets.find((asset) => {
+    if (!asset || typeof asset !== "object") {
+      return false;
+    }
+    const record = asset as Record<string, unknown>;
+    return record.id === thumbnailRef && record.kind === "image";
+  }) as Record<string, unknown> | undefined;
+  const thumbnailUrl = thumbnailAsset && typeof thumbnailAsset.path === "string" ? thumbnailAsset.path : undefined;
+  const thumbnailAlt = thumbnailAsset && typeof thumbnailAsset.alt === "string" ? thumbnailAsset.alt : undefined;
 
   return {
     packId: record.packId,
@@ -198,6 +216,8 @@ export function summarizePicturePhrasePack(record: PicturePhrasePackRecord): Pic
     description,
     topics,
     itemCount: rawItems.length,
+    thumbnailUrl,
+    thumbnailAlt,
     valid: validation.success,
     issues: validation.success ? undefined : validation.issues.map((issue) => `${issue.path}: ${issue.message}`),
     updatedAt: record.updatedAt,

@@ -5,7 +5,7 @@ export default function SettingsPage() {
   return (
     <AppShell
       title="Settings"
-      subtitle="Adjust calm controls and open module-specific pack management pages."
+      subtitle="Adjust calm controls and open FactCards, PicturePhrases, and VocabVoice pack management pages."
     >
       <SettingsHome />
     </AppShell>

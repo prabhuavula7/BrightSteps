@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const moduleTypeSchema = z.enum(["factcards", "picturephrases"]);
+export const moduleTypeSchema = z.enum(["factcards", "picturephrases", "vocabvoice"]);
 
 export const assetSchema = z.object({
   id: z.string().min(1),
@@ -65,6 +65,37 @@ const picturePhraseItemSchema = z.object({
     .optional(),
 });
 
+const vocabReviewSchema = z.object({
+  sentencePrompt: z.string().min(1),
+  acceptedPronunciations: z.array(z.string().min(1)).default([]),
+});
+
+const vocabAiMetaSchema = z.object({
+  provider: z.enum(["openai", "gemini", "manual"]).default("manual"),
+  model: z.string().min(1).default("manual"),
+  promptVersion: z.string().min(1).default("manual"),
+  generatedAt: z.string().min(1).default("manual"),
+});
+
+const vocabWordItemSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("vocabword"),
+  topic: z.string().min(1),
+  word: z.string().min(1),
+  syllables: z.array(z.string().min(1)).min(1),
+  definition: z.string().min(1),
+  partOfSpeech: z.string().optional(),
+  exampleSentence: z.string().min(1),
+  review: vocabReviewSchema,
+  hints: z.array(z.string().min(1)).default([]),
+  media: z.object({
+    pronunciationAudioRef: z.string().min(1),
+    imageRef: z.string().optional(),
+    slowAudioRef: z.string().optional(),
+  }),
+  aiMeta: vocabAiMetaSchema.optional(),
+});
+
 const commonPackFields = {
   schemaVersion: z.string().min(1),
   packId: z.string().min(1),
@@ -96,8 +127,14 @@ const picturePhrasesPackSchema = z.object({
   items: z.array(picturePhraseItemSchema).min(1),
 });
 
+const vocabVoicePackSchema = z.object({
+  ...commonPackFields,
+  moduleType: z.literal("vocabvoice"),
+  items: z.array(vocabWordItemSchema).min(1),
+});
+
 export const packSchema = z
-  .discriminatedUnion("moduleType", [factCardsPackSchema, picturePhrasesPackSchema])
+  .discriminatedUnion("moduleType", [factCardsPackSchema, picturePhrasesPackSchema, vocabVoicePackSchema])
   .superRefine((pack, ctx) => {
     const assetIds = new Set<string>();
     for (const asset of pack.assets) {
@@ -180,6 +217,58 @@ export const packSchema = z
           }
         }
       }
+
+      if (item.type === "vocabword") {
+        const audioRefs = [item.media.pronunciationAudioRef, item.media.slowAudioRef].filter(Boolean) as string[];
+        for (const ref of audioRefs) {
+          if (!assetIds.has(ref)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["items"],
+              message: `VocabWord item ${item.id} references missing asset ${ref}`,
+            });
+            continue;
+          }
+
+          const asset = pack.assets.find((entry) => entry.id === ref);
+          if (asset?.kind !== "audio") {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["items"],
+              message: `VocabWord item ${item.id} audio ref ${ref} must point to an audio asset`,
+            });
+          }
+        }
+
+        if (item.media.imageRef) {
+          const ref = item.media.imageRef;
+          if (!assetIds.has(ref)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["items"],
+              message: `VocabWord item ${item.id} references missing image asset ${ref}`,
+            });
+          } else {
+            const asset = pack.assets.find((entry) => entry.id === ref);
+            if (asset?.kind !== "image") {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ["items"],
+                message: `VocabWord item ${item.id} image ref ${ref} must point to an image asset`,
+              });
+            }
+          }
+        }
+
+        const accepted = item.review.acceptedPronunciations.map((value) => value.trim().toLowerCase());
+        if (!accepted.includes(item.word.trim().toLowerCase())) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["items"],
+            message: `VocabWord item ${item.id} must include the base word in review.acceptedPronunciations`,
+          });
+        }
+      }
     }
 
     const thumbnailRef = pack.settings?.packThumbnailImageRef;
@@ -207,6 +296,7 @@ export type ModuleType = z.infer<typeof moduleTypeSchema>;
 export type Asset = z.infer<typeof assetSchema>;
 export type FactCardItem = z.infer<typeof factCardItemSchema>;
 export type PicturePhraseItem = z.infer<typeof picturePhraseItemSchema>;
+export type VocabWordItem = z.infer<typeof vocabWordItemSchema>;
 export type BrightStepsPack = z.infer<typeof packSchema>;
 
 export type ValidationIssue = {

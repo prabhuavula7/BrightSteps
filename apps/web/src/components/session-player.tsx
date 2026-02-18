@@ -2,6 +2,7 @@
 
 import type { BrightStepsPack, FactCardItem, PicturePhraseItem } from "@brightsteps/content-schema";
 import { useSettings } from "@/components/settings-provider";
+import { VocabVoiceSessionPlayer } from "@/components/vocabvoice-session-player";
 import {
   buildPicturePhraseSessionItemOrder,
   buildFactCardSessionItemOrder,
@@ -73,6 +74,13 @@ type EndReason = "completed" | "timer" | "manual";
 
 type Props = {
   pack: BrightStepsPack;
+  assetUrlById: Record<string, string>;
+  config: SessionConfig;
+};
+
+type ClassicPack = Extract<BrightStepsPack, { moduleType: "factcards" | "picturephrases" }>;
+type ClassicProps = {
+  pack: ClassicPack;
   assetUrlById: Record<string, string>;
   config: SessionConfig;
 };
@@ -155,6 +163,14 @@ function toLearnRequest(params: {
 }
 
 export function SessionPlayer({ pack, assetUrlById, config }: Props) {
+  if (pack.moduleType === "vocabvoice") {
+    return <VocabVoiceSessionPlayer assetUrlById={assetUrlById} config={config} pack={pack} />;
+  }
+
+  return <SessionPlayerClassic assetUrlById={assetUrlById} config={config} pack={pack} />;
+}
+
+function SessionPlayerClassic({ pack, assetUrlById, config }: ClassicProps) {
   const { settings } = useSettings();
   const router = useRouter();
   const completionLockRef = useRef(false);

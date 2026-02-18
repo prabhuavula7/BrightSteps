@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChart, BookOpen, BookText, House, Image as ImageIcon, Settings } from "lucide-react";
+import { AreaChart, BookOpen, BookText, House, Image as ImageIcon, Mic, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: "/insights", label: "Insights", icon: AreaChart },
   { href: "/factcards", label: "FactCards", icon: BookText },
   { href: "/picturephrases", label: "PicturePhrases", icon: ImageIcon },
+  { href: "/vocabulary", label: "VocabVoice", icon: Mic },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 

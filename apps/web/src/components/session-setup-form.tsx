@@ -10,7 +10,7 @@ type Props = {
   packId: string;
   itemCount: number;
   moduleType: ModuleType;
-  source: "builtin" | "custom" | "picturephrases";
+  source: "builtin" | "custom" | "picturephrases" | "vocabvoice";
 };
 
 export function SessionSetupForm({ packId, itemCount, moduleType, source }: Props) {
@@ -27,7 +27,7 @@ export function SessionSetupForm({ packId, itemCount, moduleType, source }: Prop
     : getDefaultReviewDuration(itemCount);
   const inputType =
     inputTypeOverride ??
-    (moduleType === "picturephrases" ? settings.inputPreference : "tap");
+    (moduleType === "picturephrases" ? settings.inputPreference : moduleType === "vocabvoice" ? "type" : "tap");
 
   return (
     <form
@@ -111,8 +111,9 @@ export function SessionSetupForm({ packId, itemCount, moduleType, source }: Prop
             className="rounded-lg border border-slate-300 bg-white px-3 py-2"
             value={inputType}
             onChange={(event) => setInputTypeOverride(event.target.value as "tap" | "drag" | "type")}
+            disabled={moduleType === "vocabvoice"}
           >
-            <option value="tap">Tap</option>
+            {moduleType !== "vocabvoice" ? <option value="tap">Tap</option> : null}
             {moduleType === "picturephrases" ? <option value="drag">Drag</option> : null}
             <option value="type">Type</option>
           </select>

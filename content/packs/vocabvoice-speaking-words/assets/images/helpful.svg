@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+  <rect width='800' height='500' fill='#f0fdf4'/>
+  <circle cx='320' cy='250' r='130' fill='#86efac' stroke='#15803d' stroke-width='8'/>
+  <circle cx='500' cy='250' r='130' fill='#bbf7d0' stroke='#15803d' stroke-width='8'/>
+  <path d='M260 230c20-40 60-40 80 0' stroke='#14532d' stroke-width='8' fill='none' stroke-linecap='round'/>
+  <path d='M440 230c20-40 60-40 80 0' stroke='#14532d' stroke-width='8' fill='none' stroke-linecap='round'/>
+  <path d='M280 305c55 55 165 55 220 0' stroke='#14532d' stroke-width='10' fill='none' stroke-linecap='round'/>
+  <text x='400' y='85' text-anchor='middle' font-size='56' font-family='Verdana, sans-serif' fill='#166534'>Helpful</text>
+</svg>

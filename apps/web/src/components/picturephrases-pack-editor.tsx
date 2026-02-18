@@ -68,11 +68,20 @@ const EMPTY_JSON_EXAMPLE = `{
   "topics": ["daily life"],
   "settings": {
     "defaultSupportLevel": 2,
-    "audioEnabledByDefault": false
+    "audioEnabledByDefault": false,
+    "packThumbnailImageRef": "pack_thumbnail_image"
   },
-  "assets": [],
+  "assets": [
+    {
+      "id": "pack_thumbnail_image",
+      "kind": "image",
+      "path": "https://example.com/story-pack-thumb.jpg",
+      "alt": "Children reading a picture story"
+    }
+  ],
   "items": []
 }`;
+const PACK_THUMBNAIL_ASSET_ID = "pack_thumbnail_image";
 
 function toPrettyJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
@@ -81,6 +90,81 @@ function toPrettyJson(value: unknown): string {
 function clonePayload(payload: unknown): Record<string, unknown> {
   const base = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
   return JSON.parse(JSON.stringify(base)) as Record<string, unknown>;
+}
+
+async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read image file"));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(file);
+  });
+}
+
+function readThumbnailFromPayload(payload: unknown): { link: string; dataUrl?: string } {
+  const pack = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+  const settings =
+    pack.settings && typeof pack.settings === "object" ? (pack.settings as Record<string, unknown>) : null;
+  const thumbnailRef =
+    settings && typeof settings.packThumbnailImageRef === "string" ? settings.packThumbnailImageRef : "";
+  if (!thumbnailRef) {
+    return { link: "" };
+  }
+
+  const assets = Array.isArray(pack.assets) ? pack.assets : [];
+  const thumbnailAsset = assets.find((asset) => {
+    if (!asset || typeof asset !== "object") {
+      return false;
+    }
+    const record = asset as Record<string, unknown>;
+    return record.id === thumbnailRef && record.kind === "image" && typeof record.path === "string";
+  }) as Record<string, unknown> | undefined;
+
+  const path = thumbnailAsset && typeof thumbnailAsset.path === "string" ? thumbnailAsset.path : "";
+  if (!path) {
+    return { link: "" };
+  }
+
+  if (path.startsWith("data:image/")) {
+    return { link: "", dataUrl: path };
+  }
+
+  return { link: path };
+}
+
+function withPackThumbnail(
+  payload: Record<string, unknown>,
+  source: string | undefined,
+  title: string,
+): Record<string, unknown> {
+  const next = clonePayload(payload);
+  const settings =
+    next.settings && typeof next.settings === "object" ? { ...(next.settings as Record<string, unknown>) } : {};
+  const assets = Array.isArray(next.assets) ? [...next.assets] : [];
+  const trimmedSource = source?.trim() ?? "";
+
+  const nextAssets = assets.filter((asset) => {
+    if (!asset || typeof asset !== "object") {
+      return true;
+    }
+    return (asset as Record<string, unknown>).id !== PACK_THUMBNAIL_ASSET_ID;
+  });
+
+  if (trimmedSource) {
+    nextAssets.push({
+      id: PACK_THUMBNAIL_ASSET_ID,
+      kind: "image",
+      path: trimmedSource,
+      alt: `Thumbnail for ${title.trim() || "PicturePhrases pack"}`,
+    });
+    settings.packThumbnailImageRef = PACK_THUMBNAIL_ASSET_ID;
+  } else {
+    delete settings.packThumbnailImageRef;
+  }
+
+  next.settings = settings;
+  next.assets = nextAssets;
+  return next;
 }
 
 function toDraftMeta(payload: unknown): DraftMeta {
@@ -333,6 +417,8 @@ export function PicturePhrasesPackEditor({ mode, packRef }: Props) {
   const [isDirty, setIsDirty] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [creationFlow, setCreationFlow] = useState<CreationFlow | null>(mode === "create" ? null : "individual");
+  const [thumbnailLink, setThumbnailLink] = useState("");
+  const [thumbnailDataUrl, setThumbnailDataUrl] = useState<string | undefined>();
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadTopic, setUploadTopic] = useState("general");
@@ -374,6 +460,9 @@ export function PicturePhrasesPackEditor({ mode, packRef }: Props) {
         const packObject = clonePayload(payload.pack);
         setPackPayload(packObject);
         setDraft(toDraftMeta(packObject));
+        const thumbnail = readThumbnailFromPayload(packObject);
+        setThumbnailLink(thumbnail.link);
+        setThumbnailDataUrl(thumbnail.dataUrl);
         setPackId(editPackId);
         setJsonText(toPrettyJson(packObject));
         const persistedFlow = packObject.editorFlow;
@@ -418,6 +507,9 @@ export function PicturePhrasesPackEditor({ mode, packRef }: Props) {
     setPackPayload(next);
     setPackId(response.summary.packId);
     setDraft(toDraftMeta(next));
+    const thumbnail = readThumbnailFromPayload(next);
+    setThumbnailLink(thumbnail.link);
+    setThumbnailDataUrl(thumbnail.dataUrl);
     const persistedFlow = next.editorFlow;
     if (persistedFlow === "individual" || persistedFlow === "story") {
       setCreationFlow(persistedFlow);
@@ -466,6 +558,48 @@ export function PicturePhrasesPackEditor({ mode, packRef }: Props) {
     setPackPayload(next);
     setJsonText(toPrettyJson(next));
     setIsDirty(true);
+  }
+
+  function setPackThumbnailSource(params: { link?: string; dataUrl?: string; markDirty?: boolean }) {
+    const nextLink = params.link ?? "";
+    const nextDataUrl = params.dataUrl;
+    const source = nextDataUrl || nextLink.trim();
+    setThumbnailLink(nextDataUrl ? "" : nextLink);
+    setThumbnailDataUrl(nextDataUrl);
+
+    if (!packPayload) {
+      if (params.markDirty) {
+        setIsDirty(true);
+      }
+      return;
+    }
+
+    const nextPayload = withPackThumbnail(packPayload, source, draft.title);
+    setPackPayload(nextPayload);
+    setJsonText(toPrettyJson(nextPayload));
+    if (params.markDirty) {
+      setIsDirty(true);
+    }
+  }
+
+  async function handleThumbnailUpload(file: File | null) {
+    if (!file) {
+      return;
+    }
+
+    try {
+      const prepared = await normalizeImageFile(file);
+      const dataUrl = await fileToDataUrl(prepared);
+      setPackThumbnailSource({ dataUrl, markDirty: true });
+      setStatus("Pack thumbnail updated.");
+      setError("");
+    } catch (thumbnailError) {
+      setError(thumbnailError instanceof Error ? thumbnailError.message : "Failed to read thumbnail image");
+    }
+  }
+
+  function clearPackThumbnail() {
+    setPackThumbnailSource({ link: "", dataUrl: undefined, markDirty: true });
   }
 
   function clearStoryQueue() {
@@ -641,7 +775,9 @@ async function normalizeImageFile(file: File): Promise<File> {
       });
       const createdPack = clonePayload(response.pack);
       createdPack.editorFlow = creationFlow ?? "individual";
-      const saved = await savePicturePhrasePack(response.summary.packId, createdPack);
+      const source = thumbnailDataUrl || thumbnailLink.trim();
+      const payloadWithThumbnail = withPackThumbnail(createdPack, source, draft.title);
+      const saved = await savePicturePhrasePack(response.summary.packId, payloadWithThumbnail);
       applyPackResponse(saved);
       setStatus(
         creationFlow === "story"
@@ -689,6 +825,49 @@ async function normalizeImageFile(file: File): Promise<File> {
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function applyJsonToUi(): boolean {
+    try {
+      const parsed = JSON.parse(jsonText) as Record<string, unknown>;
+      const next = clonePayload(parsed);
+      setPackPayload(next);
+      setDraft(toDraftMeta(next));
+      const thumbnail = readThumbnailFromPayload(next);
+      setThumbnailLink(thumbnail.link);
+      setThumbnailDataUrl(thumbnail.dataUrl);
+      if (typeof next.packId === "string" && next.packId.trim()) {
+        setPackId(next.packId);
+      }
+      const persistedFlow = next.editorFlow;
+      if (persistedFlow === "individual" || persistedFlow === "story") {
+        setCreationFlow(persistedFlow);
+      }
+      setStatus("JSON applied to UI mode.");
+      setError("");
+      return true;
+    } catch (parseError) {
+      setError(parseError instanceof Error ? parseError.message : "Invalid JSON");
+      return false;
+    }
+  }
+
+  function switchEditorMode(nextMode: "ui" | "json") {
+    if (nextMode === "json") {
+      if (packPayload) {
+        setJsonText(toPrettyJson(packPayload));
+      }
+      setEditorMode("json");
+      return;
+    }
+
+    if (editorMode === "json") {
+      const ok = applyJsonToUi();
+      if (!ok) {
+        return;
+      }
+    }
+    setEditorMode("ui");
   }
 
   async function handleUploadImage() {
@@ -899,6 +1078,7 @@ async function normalizeImageFile(file: File): Promise<File> {
   const generationStates = Object.values(storyGenerationByCardId);
   const isStoryPipelineRunning = generationStates.some((state) => state === "pending" || state === "running");
   const hasStoryGenerationErrors = generationStates.some((state) => state === "error");
+  const thumbnailPreviewSrc = thumbnailDataUrl || thumbnailLink.trim();
 
   if (isLoading) {
     return <div className="card p-6 text-sm text-slate-600">Loading PicturePhrases pack...</div>;
@@ -921,7 +1101,7 @@ async function normalizeImageFile(file: File): Promise<File> {
             className={`rounded-md px-3 py-1 text-sm font-semibold ${
               editorMode === "ui" ? "bg-brand-soft text-brand" : "text-slate-600"
             }`}
-            onClick={() => setEditorMode("ui")}
+            onClick={() => switchEditorMode("ui")}
             type="button"
           >
             UI Mode
@@ -930,7 +1110,7 @@ async function normalizeImageFile(file: File): Promise<File> {
             className={`rounded-md px-3 py-1 text-sm font-semibold ${
               editorMode === "json" ? "bg-brand-soft text-brand" : "text-slate-600"
             }`}
-            onClick={() => setEditorMode("json")}
+            onClick={() => switchEditorMode("json")}
             type="button"
           >
             JSON Mode
@@ -1020,6 +1200,59 @@ async function normalizeImageFile(file: File): Promise<File> {
                   value={draft.topicsCsv}
                 />
               </label>
+
+              <label className="md:col-span-2 flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-600">Pack Thumbnail URL (optional)</span>
+                <input
+                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  onChange={(event) =>
+                    setPackThumbnailSource({
+                      link: event.target.value,
+                      dataUrl: undefined,
+                      markDirty: true,
+                    })
+                  }
+                  placeholder="https://example.com/thumbnail.jpg"
+                  value={thumbnailLink}
+                />
+              </label>
+
+              <div className="md:col-span-2 flex flex-wrap items-center gap-2">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-brand hover:text-brand">
+                  <Upload className="h-4 w-4" />
+                  Upload Thumbnail
+                  <input
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(event) => {
+                      void handleThumbnailUpload(event.target.files?.[0] ?? null);
+                      event.currentTarget.value = "";
+                    }}
+                    type="file"
+                  />
+                </label>
+                <button
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+                  onClick={clearPackThumbnail}
+                  type="button"
+                >
+                  Remove Thumbnail
+                </button>
+              </div>
+
+              <div className="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p className="text-xs font-semibold text-slate-600">Thumbnail preview</p>
+                {thumbnailPreviewSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt={`${draft.title || "PicturePhrases pack"} thumbnail`}
+                    className="mt-2 h-44 w-full rounded-lg border border-slate-200 object-cover"
+                    src={thumbnailPreviewSrc}
+                  />
+                ) : (
+                  <p className="mt-2 text-xs text-slate-500">Add a URL or upload an image to set a pack thumbnail.</p>
+                )}
+              </div>
             </div>
 
             {!packPayload ? (
@@ -1419,15 +1652,24 @@ async function normalizeImageFile(file: File): Promise<File> {
             }}
             value={jsonText}
           />
-          <button
-            className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
-            disabled={isSaving || !packId}
-            onClick={() => void saveCurrentPack()}
-            type="button"
-          >
-            {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save JSON
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+              onClick={applyJsonToUi}
+              type="button"
+            >
+              Apply JSON to UI
+            </button>
+            <button
+              className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
+              disabled={isSaving || !packId}
+              onClick={() => void saveCurrentPack()}
+              type="button"
+            >
+              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save JSON
+            </button>
+          </div>
         </section>
       )}
 

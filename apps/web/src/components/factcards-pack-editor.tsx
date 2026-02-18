@@ -3,6 +3,14 @@
 import { validatePack, type BrightStepsPack } from "@brightsteps/content-schema";
 import { db, saveCustomPack } from "@/db/client-db";
 import { fetchPack } from "@/lib/api";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  LoaderCircle,
+  Save,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -110,41 +118,6 @@ async function fileToDataUrl(file: File): Promise<string> {
     reader.onload = () => resolve(String(reader.result));
     reader.readAsDataURL(file);
   });
-}
-
-function UploadImageIcon() {
-  return (
-    <svg aria-hidden="true" className="h-4 w-4 text-brand" fill="none" viewBox="0 0 24 24">
-      <rect height="14" rx="2" stroke="currentColor" strokeWidth="1.8" width="18" x="3" y="5" />
-      <circle cx="9" cy="10" fill="currentColor" r="1.5" />
-      <path d="M6.5 17l4.2-4.2a1 1 0 011.4 0L17.5 18" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M14 15l1.7-1.7a1 1 0 011.4 0L19.5 16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function UploadAudioIcon() {
-  return (
-    <svg aria-hidden="true" className="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
-      <path d="M6 10v4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M10 7v10" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M14 5v14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M18 9v6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M4 20h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function DeleteCardIcon() {
-  return (
-    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path d="M5 7h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M10 11v6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M14 11v6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M8 7l1-2h6l1 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-      <path d="M7 7l1 12h8l1-12" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-    </svg>
-  );
 }
 
 function isCardTouched(item: FactDraftItem): boolean {
@@ -539,6 +512,27 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
     setStatus("JSON loaded into the UI editor. You can now edit fields visually.");
   }
 
+  function switchEditorMode(nextMode: "ui" | "json") {
+    if (nextMode === "json") {
+      setUploadText(generatedJsonFromUi);
+      setCreateMethod("json");
+      setStatus("");
+      return;
+    }
+
+    if (createMethod === "json") {
+      const pack = parseJsonFromText(uploadText);
+      if (!pack) {
+        return;
+      }
+      applyPackToUi(pack);
+      setStatus("JSON applied to UI mode.");
+      return;
+    }
+
+    setCreateMethod("ui");
+  }
+
   async function handleSaveFromJson(options?: { navigateOnSuccess?: boolean }): Promise<boolean> {
     const navigateOnSuccess = options?.navigateOnSuccess ?? true;
     const pack = parseJsonFromText(uploadText);
@@ -584,66 +578,71 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
 
   return (
     <div className="space-y-5">
-      <div className="card p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <button
-              className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-              onClick={handleBackClick}
-              type="button"
-            >
-              Back to FactCards
-            </button>
-            <h2 className="mt-3 text-xl font-black text-slate-900">{title}</h2>
-            <p className="mt-1 text-sm text-slate-600">
-              {mode === "create"
-                ? "Choose UI mode for form-based creation or JSON mode for direct upload."
-                : `Editing source: ${source}. Saving writes to local memory packs.`}
-            </p>
-          </div>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              hasUnsavedChanges ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
-            }`}
-          >
-            {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
-          </span>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button
+          className="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          onClick={handleBackClick}
+          type="button"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to FactCards
+        </button>
 
-        <div className="mt-4 flex gap-2">
+        <div className="inline-flex rounded-lg border border-slate-300 bg-white p-1">
           <button
-            className={`rounded px-3 py-1 text-xs font-semibold ${
-              createMethod === "ui" ? "bg-brand-soft text-brand" : "bg-slate-100 text-slate-600"
+            className={`rounded-md px-3 py-1 text-sm font-semibold ${
+              createMethod === "ui" ? "bg-brand-soft text-brand" : "text-slate-600"
             }`}
-            onClick={() => {
-              setCreateMethod("ui");
-              setStatus("");
-            }}
+            onClick={() => switchEditorMode("ui")}
             type="button"
           >
-            {mode === "create" ? "Create via UI" : "Edit via UI"}
+            UI Mode
           </button>
           <button
-            className={`rounded px-3 py-1 text-xs font-semibold ${
-              createMethod === "json" ? "bg-brand-soft text-brand" : "bg-slate-100 text-slate-600"
+            className={`rounded-md px-3 py-1 text-sm font-semibold ${
+              createMethod === "json" ? "bg-brand-soft text-brand" : "text-slate-600"
             }`}
-            onClick={() => {
-              setCreateMethod("json");
-              setStatus("");
-            }}
+            onClick={() => switchEditorMode("json")}
             type="button"
           >
-            {mode === "create" ? "Create via JSON" : "Edit via JSON"}
+            JSON Mode
           </button>
         </div>
       </div>
 
+      <div className="card flex flex-wrap items-center justify-between gap-2 border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+        <span>
+          <span className="font-bold text-slate-900">{title}</span>
+          <span className="mx-2">•</span>
+          {mode === "create"
+            ? "Choose UI or JSON mode to build this FactCards pack."
+            : `Editing source: ${source}. Saving writes to local memory packs.`}
+        </span>
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            hasUnsavedChanges ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+          }`}
+        >
+          {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
+        </span>
+      </div>
+
+      {status ? (
+        <div className="card border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+          <span className="inline-flex items-center gap-1">
+            <CheckCircle2 className="h-4 w-4" />
+            {status}
+          </span>
+        </div>
+      ) : null}
+
       {createMethod === "ui" && (
-        <section className="card p-5">
+        <section className="card space-y-4 p-5">
           {loading ? (
             <p className="text-sm text-slate-600">Loading editor...</p>
           ) : (
             <div className="space-y-4">
+              <h2 className="text-lg font-bold text-slate-900">Pack Details</h2>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <label className="space-y-1 text-sm text-slate-700" htmlFor="pack-id">
                   <span className="font-semibold">Pack ID</span>
@@ -723,7 +722,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                       className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand hover:bg-brand-soft"
                       htmlFor="pack-thumbnail-upload"
                     >
-                      <UploadImageIcon />
+                      <Upload className="h-4 w-4 text-brand" />
                       Upload thumbnail
                     </label>
                     <button
@@ -801,7 +800,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                         }}
                         type="button"
                       >
-                        <DeleteCardIcon />
+                        <Trash2 className="h-4 w-4" />
                         Delete
                       </button>
                     </div>
@@ -972,7 +971,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                           className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand hover:bg-brand-soft"
                           htmlFor={`image-upload-${item.id}`}
                         >
-                          <UploadImageIcon />
+                          <Upload className="h-4 w-4 text-brand" />
                           Upload image from computer
                         </label>
 
@@ -998,7 +997,7 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
                           className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-500 hover:bg-emerald-50"
                           htmlFor={`audio-upload-${item.id}`}
                         >
-                          <UploadAudioIcon />
+                          <Upload className="h-4 w-4 text-emerald-600" />
                           Upload audio from computer
                         </label>
                       </div>
@@ -1051,80 +1050,63 @@ export function FactCardsPackEditor({ mode, packRef, source = "builtin" }: Props
         </section>
       )}
 
-      <section className="card p-5">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-slate-600">JSON Workspace</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          {mode === "create"
-            ? "Upload JSON packs, save directly, or apply JSON into the UI editor for visual editing."
-            : "Edit this existing deck directly in JSON, then apply to UI or save back to local memory."}
-        </p>
+      {createMethod === "json" ? (
+        <section className="card space-y-4 p-5">
+          <div className="text-sm text-slate-600">
+            JSON mode shows the full pack payload. Save applies this JSON directly.
+          </div>
 
-        <label className="mt-3 block text-sm text-slate-700">
-          Upload JSON file
-          <input
-            accept="application/json,.json"
-            className="mt-1 block w-full"
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-brand hover:text-brand">
+            <Upload className="h-4 w-4" />
+            Upload JSON file
+            <input
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) {
+                  void handleJsonUpload(file);
+                }
+                event.currentTarget.value = "";
+              }}
+              type="file"
+            />
+          </label>
+
+          <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+            {EXAMPLE_JSON}
+          </pre>
+
+          <textarea
+            className="min-h-[420px] w-full rounded-lg border border-slate-300 p-3 font-mono text-xs"
             onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) {
-                void handleJsonUpload(file);
-              }
-            }}
-            type="file"
-          />
-        </label>
-
-        <textarea
-          className="mt-3 h-56 w-full rounded-lg border border-slate-300 p-2 text-xs"
-          onChange={(event) => {
-            setCreateMethod("json");
-            setUploadText(event.target.value);
-          }}
-          placeholder="Paste FactCards JSON here"
-          value={uploadText}
-        />
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
-            onClick={() => {
               setCreateMethod("json");
-              setUploadText(generatedJsonFromUi);
-              setStatus("Loaded current UI JSON into the editable JSON workspace.");
+              setUploadText(event.target.value);
             }}
-            type="button"
-          >
-            Load current UI JSON
-          </button>
-          <button
-            className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
-            onClick={handleApplyJsonToUi}
-            type="button"
-          >
-            Apply JSON to UI
-          </button>
-          <button
-            className={`rounded px-3 py-2 text-xs font-bold text-white ${saveBusy ? "bg-slate-400" : "bg-brand"}`}
-            disabled={saveBusy}
-            onClick={() => void handleSaveFromJson()}
-            type="button"
-          >
-            {saveBusy ? "Saving..." : "Save JSON Pack"}
-          </button>
-          {mode === "create" && createMethod === "ui" ? (
-            <p className="self-center text-xs text-slate-500">
-              Tip: switch to <strong>JSON mode</strong> above when you want to author directly in JSON.
-            </p>
-          ) : null}
-        </div>
+            placeholder="Paste FactCards JSON here"
+            value={uploadText}
+          />
 
-        <h4 className="mt-5 text-xs font-bold uppercase text-slate-600">Example JSON Format</h4>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-[11px] text-slate-100">
-          <code>{EXAMPLE_JSON}</code>
-        </pre>
-      </section>
-
-      {status ? <p className="text-sm text-slate-700">{status}</p> : null}
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+              onClick={handleApplyJsonToUi}
+              type="button"
+            >
+              Apply JSON to UI
+            </button>
+            <button
+              className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
+              disabled={saveBusy}
+              onClick={() => void handleSaveFromJson()}
+              type="button"
+            >
+              {saveBusy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save JSON
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       {showLeaveModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">

@@ -1,0 +1,10 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+  <rect width='800' height='500' fill='#ecfeff'/>
+  <circle cx='120' cy='110' r='45' fill='#bae6fd'/>
+  <circle cx='210' cy='90' r='30' fill='#bae6fd'/>
+  <rect x='140' y='90' width='120' height='45' rx='20' fill='#bae6fd'/>
+  <path d='M110 320l390-45 150 35-150 35-390-45z' fill='#cbd5e1' stroke='#334155' stroke-width='7'/>
+  <path d='M350 275l120-95 35 20-85 95z' fill='#94a3b8' stroke='#334155' stroke-width='7'/>
+  <path d='M350 345l120 95 35-20-85-95z' fill='#94a3b8' stroke='#334155' stroke-width='7'/>
+  <text x='400' y='85' text-anchor='middle' font-size='56' font-family='Verdana, sans-serif' fill='#0f766e'>Airplane</text>
+</svg>

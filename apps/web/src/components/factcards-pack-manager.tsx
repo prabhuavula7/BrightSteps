@@ -4,7 +4,7 @@ import { db, type CustomPackRecord } from "@/db/client-db";
 import { FactCardsPackThumb } from "@/components/factcards-pack-thumb";
 import { fetchPackSummaries, type PackSummary } from "@/lib/api";
 import { resolvePackThumbnail } from "@/lib/pack-thumbnail";
-import { Pencil, Play, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, Play, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -46,7 +46,16 @@ export function FactCardsPackManager() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-bold text-slate-900">Available FactCards Packs</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            href="/settings?section=modules#settings-modules"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Module Settings
+          </Link>
+          <h2 className="text-xl font-bold text-slate-900">Available FactCards Packs</h2>
+        </div>
         <Link
           className="inline-flex items-center gap-1 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white"
           href="/settings/factcards/create"

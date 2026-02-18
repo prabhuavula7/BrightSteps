@@ -2,7 +2,7 @@
 
 import { SessionSetupForm } from "@/components/session-setup-form";
 import { db } from "@/db/client-db";
-import { fetchPack, fetchPicturePhrasePack } from "@/lib/api";
+import { fetchPack, fetchPicturePhrasePack, fetchVocabPack } from "@/lib/api";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -10,8 +10,8 @@ type SetupState = {
   packId: string;
   title: string;
   itemCount: number;
-  moduleType: "factcards" | "picturephrases";
-  source: "builtin" | "custom" | "picturephrases";
+  moduleType: "factcards" | "picturephrases" | "vocabvoice";
+  source: "builtin" | "custom" | "picturephrases" | "vocabvoice";
 };
 
 export function SessionSetupClient() {
@@ -27,9 +27,10 @@ export function SessionSetupClient() {
       const packId = searchParams.get("packId");
       const customPackId = searchParams.get("customPackId");
       const ppPackId = searchParams.get("ppPackId");
+      const vocabPackId = searchParams.get("vocabPackId");
 
-      if (!packId && !customPackId && !ppPackId) {
-        setError("Choose a pack from FactCards or PicturePhrases first.");
+      if (!packId && !customPackId && !ppPackId && !vocabPackId) {
+        setError("Choose a pack from FactCards, PicturePhrases, or VocabVoice first.");
         return;
       }
 
@@ -74,6 +75,26 @@ export function SessionSetupClient() {
         return;
       }
 
+      if (vocabPackId) {
+        try {
+          const payload = await fetchVocabPack(vocabPackId);
+          if (cancelled) {
+            return;
+          }
+
+          setState({
+            packId: vocabPackId,
+            title: payload.summary.title,
+            itemCount: payload.summary.itemCount,
+            moduleType: "vocabvoice",
+            source: "vocabvoice",
+          });
+        } catch {
+          setError("VocabVoice pack could not be loaded.");
+        }
+        return;
+      }
+
       if (packId) {
         try {
           const payload = await fetchPack(packId);
@@ -110,7 +131,13 @@ export function SessionSetupClient() {
           <div className="mb-4 sm:mb-5">
             <h1 className="text-2xl font-black text-slate-900 sm:text-3xl">{state.title}</h1>
             <p className="text-sm text-slate-600">
-              Configure your {state.moduleType === "factcards" ? "FactCards" : "PicturePhrases"} session.
+              Configure your{" "}
+              {state.moduleType === "factcards"
+                ? "FactCards"
+                : state.moduleType === "picturephrases"
+                  ? "PicturePhrases"
+                  : "VocabVoice"}{" "}
+              session.
             </p>
           </div>
           <SessionSetupForm

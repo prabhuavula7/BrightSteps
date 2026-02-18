@@ -1,4 +1,4 @@
-import { BookOpen, BookText, Image as ImageIcon, Settings } from "lucide-react";
+import { BookOpen, BookText, Image as ImageIcon, Mic, Settings } from "lucide-react";
 import Link from "next/link";
 
 export function TopNav() {
@@ -19,6 +19,10 @@ export function TopNav() {
           <Link className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100 hover:text-brand" href="/picturephrases">
             <ImageIcon className="h-4 w-4" />
             <span className="hidden sm:inline">PicturePhrases</span>
+          </Link>
+          <Link className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100 hover:text-brand" href="/vocabulary">
+            <Mic className="h-4 w-4" />
+            <span className="hidden sm:inline">VocabVoice</span>
           </Link>
           <Link className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100 hover:text-brand" href="/settings">
             <Settings className="h-4 w-4" />

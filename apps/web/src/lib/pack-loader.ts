@@ -5,7 +5,7 @@ import path from "node:path";
 export type PackSummary = {
   packId: string;
   title: string;
-  moduleType: "factcards" | "picturephrases";
+  moduleType: "factcards" | "picturephrases" | "vocabvoice";
   topics: string[];
   itemCount: number;
   description?: string;

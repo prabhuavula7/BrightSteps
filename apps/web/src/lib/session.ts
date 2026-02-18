@@ -7,8 +7,8 @@ import {
 import type { BrightStepsPack, FactCardItem, PicturePhraseItem } from "@brightsteps/content-schema";
 import type { ItemStateRecord } from "@/db/client-db";
 
-export function estimateItemCount(durationMinutes: number, moduleType: "factcards" | "picturephrases") {
-  const perItemSeconds = moduleType === "factcards" ? 20 : 45;
+export function estimateItemCount(durationMinutes: number, moduleType: "factcards" | "picturephrases" | "vocabvoice") {
+  const perItemSeconds = moduleType === "factcards" ? 20 : moduleType === "picturephrases" ? 45 : 35;
   return Math.max(3, Math.floor((durationMinutes * 60) / perItemSeconds));
 }
 
